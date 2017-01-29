@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
 using Rigid.Asserts;
 using Rigid.Exceptions;
 
@@ -19,6 +20,18 @@ namespace Rigid
         public TRequest AssertStatus(HttpStatusCode expectedStatusCode)
         {
             Asserts.Add(new StatusCodeAssert(expectedStatusCode));
+            return this as TRequest;
+        }
+
+        public TRequest AssertContainsHeader(string name, IEnumerable<string> values)
+        {
+            Asserts.Add(new ContainsHeaderAssert(name, values));
+            return this as TRequest;
+        }
+
+        public TRequest AssertContainsHeader(string name, string value)
+        {
+            Asserts.Add(new ContainsHeaderAssert(name, new []{ value }));
             return this as TRequest;
         }
 
@@ -44,12 +57,14 @@ namespace Rigid
 
         private Response Send()
         {
-            var response = _httpClient.SendAsync(_httpRequest).Result;
+            // Use the CancellationToken override so we can mock the HttpClient by overriding SendAsync
+            var response = _httpClient.SendAsync(_httpRequest, new CancellationToken()).Result;
+            var content = response?.Content?.ReadAsByteArrayAsync().Result;
 
             return new Response
             {
                 ResponseMessage = response,
-                ResponseContent = new MemoryStream(response.Content.ReadAsByteArrayAsync().Result, false)
+                ResponseContent = content != null ? new MemoryStream(content, false) : null
             };
         }
 
