@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -24,7 +25,7 @@ namespace Rigid
         public void Execute()
         {
             BeforeSend(_httpRequest);
-            var response = _httpClient.SendAsync(_httpRequest).Result;
+            var response = Send();
 
             var result = Asserts.Select(a => a.Execute(response));
 
@@ -39,6 +40,17 @@ namespace Rigid
         {
             _httpClient = (httpClientFactory ?? DefaultHttpClientFactory)();
             _httpRequest = new HttpRequestMessage(httpMethod, uri);
+        }
+
+        private Response Send()
+        {
+            var response = _httpClient.SendAsync(_httpRequest).Result;
+
+            return new Response
+            {
+                ResponseMessage = response,
+                ResponseContent = new MemoryStream(response.Content.ReadAsByteArrayAsync().Result, false)
+            };
         }
 
         private static HttpClient DefaultHttpClientFactory() => new HttpClient();

@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using System.Net.Http;
 
 namespace Rigid.Asserts
 {
@@ -12,10 +11,10 @@ namespace Rigid.Asserts
             _expectedStatusCode = expectedStatusCode;
         }
 
-        public override Result Execute(HttpResponseMessage response)
+        public override Result Execute(Response response)
         {
-            if(response.StatusCode != _expectedStatusCode)
-                return Failed<StatusCodeAssert>($"Expected status '{_expectedStatusCode}' but got status '{response.StatusCode}'.");
+            if(response.ResponseMessage.StatusCode != _expectedStatusCode)
+                return Failed<StatusCodeAssert>($"Expected status '{_expectedStatusCode}' but got status '{response.ResponseMessage.StatusCode}'.");
 
             return Passed<StatusCodeAssert>();
         }
