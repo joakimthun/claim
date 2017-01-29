@@ -1,51 +1,46 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Threading.Tasks;
 using Rigid.Asserts;
 using Rigid.Exceptions;
 
 namespace Rigid
 {
-    public class Request
+    public abstract class Request<TRequest> where TRequest : Request<TRequest>
     {
-        private readonly ICollection<Assert> _asserts = new List<Assert>();
-        private readonly string _requestUri;
-        private readonly HttpMethod _httpMethod;
+        private readonly HttpClient _httpClient;
+        private readonly HttpRequestMessage _httpRequest;
 
-        internal Request(string requestUri, HttpMethod httpMethod)
-        {
-            _requestUri = requestUri;
-            _httpMethod = httpMethod;
-        }
+        protected ICollection<Assert> Asserts = new List<Assert>();
 
-        public Request ExpectedStatus(HttpStatusCode expectedStatusCode)
+        public TRequest AssertStatus(HttpStatusCode expectedStatusCode)
         {
-            _asserts.Add(new StatusCodeAssert(expectedStatusCode));
-            return this;
+            Asserts.Add(new StatusCodeAssert(expectedStatusCode));
+            return this as TRequest;
         }
 
         public void Execute()
         {
-            ExecuteAsync().Wait();
+            BeforeSend(_httpRequest);
+            var response = _httpClient.SendAsync(_httpRequest).Result;
+
+            var result = Asserts.Select(a => a.Execute(response));
+
+            var failedAsserts = result.Where(x => x.Status == ResultStatus.Failed).ToList();
+            if (failedAsserts.Any())
+                throw new AssertFailedException(failedAsserts);
         }
 
-        public async Task ExecuteAsync()
+        protected virtual void BeforeSend(HttpRequestMessage httpRequest) { }
+
+        protected Request(HttpMethod httpMethod, string uri, Func<HttpClient> httpClientFactory)
         {
-            using (var client = new HttpClient())
-            using (var response = await client.GetAsync(_requestUri))
-            {
-                var result = new List<Result>();
-                foreach (var assert in _asserts)
-                {
-                    result.Add(assert.Execute(response));
-                }
-
-                var failed = result.Where(x => x.Status == ResultStatus.Failed).ToList();
-                if(failed.Any())
-                    throw new RequestFailedException(failed);
-            }
+            _httpClient = (httpClientFactory ?? DefaultHttpClientFactory)();
+            _httpRequest = new HttpRequestMessage(httpMethod, uri);
         }
+
+        private static HttpClient DefaultHttpClientFactory() => new HttpClient();
     }
 }

@@ -1,12 +1,11 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 
 namespace Rigid
 {
     public static class Rigid
     {
-        public static Request Get(string requestUri)
-        {
-            return new Request(requestUri, HttpMethod.Get);
-        }
+        public static GetRequest Get(string uri, Func<HttpClient> httpClientFactory = null) => new GetRequest(uri, httpClientFactory);
+        public static PostRequest Post(string uri, Func<HttpClient> httpClientFactory = null) => new PostRequest(uri, httpClientFactory);
     }
 }

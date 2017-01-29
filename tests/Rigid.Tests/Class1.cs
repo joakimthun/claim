@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System.Net;
+using NUnit.Framework;
 
 namespace Rigid.Tests
 {
@@ -8,8 +9,11 @@ namespace Rigid.Tests
         [Test]
         public void Test()
         {
-            var x = Rigid.Get("");
-            Assert.IsFalse(x == null);
+            Rigid.Get("https://www.google.com")
+                .AssertStatus(HttpStatusCode.BadGateway)
+                .Execute();
+
+            Assert.IsFalse(true);
         }
     }
 }
