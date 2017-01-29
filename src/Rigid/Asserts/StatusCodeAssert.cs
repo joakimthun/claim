@@ -15,9 +15,9 @@ namespace Rigid.Asserts
         public override Result Execute(HttpResponseMessage response)
         {
             if(response.StatusCode != _expectedStatusCode)
-                return Failed($"Expected status '{_expectedStatusCode}' but got status '{response.StatusCode}'.");
+                return Failed<StatusCodeAssert>($"Expected status '{_expectedStatusCode}' but got status '{response.StatusCode}'.");
 
-            return Passed();
+            return Passed<StatusCodeAssert>();
         }
     }
 }
