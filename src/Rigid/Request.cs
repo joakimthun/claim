@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -35,6 +34,18 @@ namespace Rigid
             return this as TRequest;
         }
 
+        public TRequest AssertJson(object expectedResponseStructure, PropertyComparison? propertyComparison = null)
+        {
+            Asserts.Add(new JsonAssert(expectedResponseStructure, propertyComparison));
+            return this as TRequest;
+        }
+
+        public TRequest AssertJson(string expectedResponseStructure, PropertyComparison? propertyComparison = null)
+        {
+            Asserts.Add(new JsonAssert(expectedResponseStructure, propertyComparison));
+            return this as TRequest;
+        }
+
         public void Execute()
         {
             BeforeSend(_httpRequest);
@@ -59,12 +70,11 @@ namespace Rigid
         {
             // Use the CancellationToken override so we can mock the HttpClient by overriding SendAsync
             var response = _httpClient.SendAsync(_httpRequest, new CancellationToken()).Result;
-            var content = response?.Content?.ReadAsByteArrayAsync().Result;
 
             return new Response
             {
                 ResponseMessage = response,
-                ResponseContent = content != null ? new MemoryStream(content, false) : null
+                ResponseContent = response?.Content?.ReadAsByteArrayAsync().Result
             };
         }
 
