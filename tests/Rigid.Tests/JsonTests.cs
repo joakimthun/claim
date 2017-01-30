@@ -114,17 +114,83 @@ namespace Rigid.Tests
             Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyString' was not present in the response."));
         }
 
-        //[Test]
-        //public void Assert_on_status_throws_an_excepetion_if_the_status_does_not_match()
-        //{
-        //    var exception = Assert.Catch<AssertFailedException>(() =>
-        //    {
-        //        Rigid.Get("https://www.google.com", () => CreateMockedHttpClient(HttpStatusCode.BadGateway))
-        //            .AssertStatus(HttpStatusCode.OK)
-        //            .Execute();
-        //    });
+        [Test]
+        public void Assert_json_handles_multiple_levels_of_nested_objects_correctly()
+        {
+            var actual = new
+            {
+                MyInt = 123,
+                MyDouble = 123.123,
+                MyString = "Hello!!!!????",
+                MyFirstNestedObject = new
+                {
+                    MyInt = 123,
+                    MyDouble = 123.123,
+                    MyString = "Hello!!!!????",
+                    MySecondNestedObject = new
+                    {
+                        MyInt = 123,
+                        MyDouble = 123.123,
+                        MyString = "Hello!!!!????"
+                    }
+                }
+            };
 
-        //    Assert.IsTrue(exception.FailedResults.All(x => x.Status == ResultStatus.Failed && x.AssertType == typeof(StatusCodeAssert)));
-        //}
+            Rigid.Get("https://www.google.com", () => CreateMockedJsonHttpClient(actual))
+                .AssertJson(actual)
+                .Execute();
+        }
+
+        [Test]
+        public void Assert_json_correctly_generates_multiple_level_nested_error_messages()
+        {
+            var actual = new
+            {
+                MyInt = 123,
+                MyDouble = 123.123,
+                MyString = "Hello!!!!????",
+                MyFirstNestedObject = new
+                {
+                    MyInt = 123,
+                    MyDouble = 123.123,
+                    MyString = "Hello!!!!????",
+                    MySecondNestedObject = new
+                    {
+                        MyInt = 123,
+                        MyDouble = 123.123,
+                        MyString = "Hello!!!!????"
+                    }
+                }
+            };
+
+            var exception = Assert.Catch<AssertFailedException>(() =>
+            {
+                Rigid.Get("https://www.google.com", () => CreateMockedJsonHttpClient(actual))
+                    .AssertJson(new
+                    {
+                        MyInt = 1234,
+                        MyDouble = 123.123,
+                        MyString = "Hello!!!!????",
+                        MyFirstNestedObject = new
+                        {
+                            MyInt = 123,
+                            MyDouble = 123.123,
+                            MyString = "World...",
+                            MySecondNestedObject = new
+                            {
+                                MyInt = 1234,
+                                MyDouble = 123.123,
+                                MyString = ":("
+                            }
+                        }
+                    })
+                    .Execute();
+            });
+
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyInt' does not have the same value as the property in the response. Expected value: '1234'. Actual value: '123'"));
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyFirstNestedObject.MyString' does not have the same value as the property in the response. Expected value: 'World...'. Actual value: 'Hello!!!!????'"));
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyFirstNestedObject.MySecondNestedObject.MyInt' does not have the same value as the property in the response. Expected value: '1234'. Actual value: '123'"));
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyFirstNestedObject.MySecondNestedObject.MyString' does not have the same value as the property in the response. Expected value: ':('. Actual value: 'Hello!!!!????'"));
+        }
     }
 }

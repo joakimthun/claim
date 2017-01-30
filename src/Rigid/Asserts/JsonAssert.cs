@@ -32,6 +32,7 @@ namespace Rigid.Asserts
         private readonly object _expectedResponseStructure;
         private readonly PropertyComparison? _propertyComparison;
         private readonly ICollection<string> _errors = new List<string>();
+        private readonly Stack<string> _expectedPropertyPath = new Stack<string>();
 
         public JsonAssert(object expectedResponseStructure, PropertyComparison? propertyComparison = null)
         {
@@ -55,11 +56,21 @@ namespace Rigid.Asserts
             return Passed<JsonAssert>();
         }
 
-        private void Verify(object expected, JObject actual)
+        private void Verify(object expected, JObject actual, string parentExpectedProperty = null)
         {
+            if (parentExpectedProperty != null)
+            {
+                _expectedPropertyPath.Push(parentExpectedProperty);
+            }
+
             foreach (var property in expected.GetProperties())
             {
                 VerifyProperty(property, expected, actual);
+            }
+
+            if (parentExpectedProperty != null)
+            {
+                _expectedPropertyPath.Pop();
             }
         }
 
@@ -77,7 +88,7 @@ namespace Rigid.Asserts
 
             if (actualProperty == null)
             {
-                _errors.Add($"The expected property '{expectedProperty.Name}' was not present in the response.");
+                _errors.Add($"The expected property '{GetExpectedPropertyPathName(expectedProperty)}' was not present in the response.");
                 return;
             }
 
@@ -97,7 +108,7 @@ namespace Rigid.Asserts
         {
             if (actual.Type == JTokenType.Object)
             {
-                Verify(expected, (JObject)actual);
+                Verify(expected, (JObject)actual, expectedProperty.Name);
                 return;
             }
 
@@ -106,13 +117,21 @@ namespace Rigid.Asserts
                 var actualValue = actual.CastToSystemType(expected.GetType());
 
                 if (!expected.Equals(actualValue))
-                    _errors.Add($"The expected property '{expectedProperty.Name}' does not have the same value as the property in the response. Expected value: '{expected}'. Actual value: '{actualValue}'");
+                    _errors.Add($"The expected property '{GetExpectedPropertyPathName(expectedProperty)}' does not have the same value as the property in the response. Expected value: '{expected}'. Actual value: '{actualValue}'");
             }
             catch (InvalidCastException)
             {
                 var expectedPropertyTypeName = expectedProperty.PropertyType.Name.Contains("AnonymousType") ? "Object" : expectedProperty.PropertyType.Name;
-                _errors.Add($"The expected property '{expectedProperty.Name}' is not of the same type as the property in the response. Expected type: '{expectedPropertyTypeName}'. Actual type: '{actual.Type}'");
+                _errors.Add($"The expected property '{GetExpectedPropertyPathName(expectedProperty)}' is not of the same type as the property in the response. Expected type: '{expectedPropertyTypeName}'. Actual type: '{actual.Type}'");
             }
+        }
+
+        private string GetExpectedPropertyPathName(PropertyInfo currentLevelExpectedProperty)
+        {
+            if (!_expectedPropertyPath.Any())
+                return currentLevelExpectedProperty.Name;
+
+            return string.Join(".", _expectedPropertyPath.Reverse()) + "." + currentLevelExpectedProperty.Name;
         }
 
         private static bool VerifyExpectedProperyValue(object expectedValue, JToken actualValue)
