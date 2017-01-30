@@ -1,12 +1,16 @@
 ﻿using System;
+using System.Linq;
 using Newtonsoft.Json.Linq;
 
 namespace Rigid.Extensions
 {
     public static class JTokenExtensions
     {
-        public static object CastToSystemType(this JToken token, Type targetType)
+        public static object CastToSystemType(this JToken token, Type targetType, bool allowImplicitTypeConversions = false)
         {
+            if(!allowImplicitTypeConversions)
+                AssertTypeMatch(token, targetType);
+
             if (targetType == typeof(bool))
                 return (bool)token;
             if(targetType == typeof(DateTimeOffset))
@@ -81,6 +85,47 @@ namespace Rigid.Extensions
                 return (TimeSpan?)token;
             if(targetType == typeof(Uri))
                 return (Uri)token;
+
+            throw new InvalidCastException($"Cannot convert the type '{token.Type}' to '{targetType.FullName}'.");
+        }
+
+        private static void AssertTypeMatch(JToken token, Type targetType)
+        {
+            var ret = false;
+
+            switch (token.Type)
+            {
+                case JTokenType.Integer:
+                    ret = new[] { typeof(byte), typeof(short), typeof(int), typeof(long) }.Contains(targetType);
+                    break;            
+                case JTokenType.Float:
+                    ret = new[] { typeof(float), typeof(double) }.Contains(targetType);
+                    break;
+                case JTokenType.String:
+                    ret = new[] { typeof(string), typeof(char) }.Contains(targetType);
+                    break;
+                case JTokenType.Boolean:
+                    ret = typeof(bool) == targetType;
+                    break;
+                case JTokenType.Date:
+                    ret = typeof(DateTime) == targetType;
+                    break;
+                case JTokenType.Bytes:
+                    ret = typeof(byte[]) == targetType;
+                    break;
+                case JTokenType.Guid:
+                    ret = typeof(Guid) == targetType;
+                    break;
+                case JTokenType.Uri:
+                    ret = typeof(Uri) == targetType;
+                    break;
+                case JTokenType.TimeSpan:
+                    ret = typeof(TimeSpan) == targetType;
+                    break;
+            }
+
+            if (ret)
+                return;
 
             throw new InvalidCastException($"Cannot convert the type '{token.Type}' to '{targetType.FullName}'.");
         }

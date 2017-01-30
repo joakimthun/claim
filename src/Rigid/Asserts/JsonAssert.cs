@@ -32,7 +32,7 @@ namespace Rigid.Asserts
         private readonly object _expectedResponseStructure;
         private readonly PropertyComparison? _propertyComparison;
         private readonly ICollection<string> _errors = new List<string>();
-        private readonly Stack<string> _expectedPropertyPath = new Stack<string>();
+        private readonly ICollection<string> _expectedPropertyPath = new List<string>();
 
         public JsonAssert(object expectedResponseStructure, PropertyComparison? propertyComparison = null)
         {
@@ -60,7 +60,7 @@ namespace Rigid.Asserts
         {
             if (parentExpectedProperty != null)
             {
-                _expectedPropertyPath.Push(parentExpectedProperty);
+                PushExpectedPropertyPath(parentExpectedProperty);
             }
 
             foreach (var property in expected.GetProperties())
@@ -70,7 +70,7 @@ namespace Rigid.Asserts
 
             if (parentExpectedProperty != null)
             {
-                _expectedPropertyPath.Pop();
+                PopExpectedPropertyPath();
             }
         }
 
@@ -111,6 +111,11 @@ namespace Rigid.Asserts
                 Verify(expected, (JObject)actual, expectedProperty.Name);
                 return;
             }
+            if (actual.Type == JTokenType.Array)
+            {
+                CompareArrays(expectedProperty, expected, actual);
+                return;
+            }
 
             try
             {
@@ -121,9 +126,52 @@ namespace Rigid.Asserts
             }
             catch (InvalidCastException)
             {
-                var expectedPropertyTypeName = expectedProperty.PropertyType.Name.Contains("AnonymousType") ? "Object" : expectedProperty.PropertyType.Name;
-                _errors.Add($"The expected property '{GetExpectedPropertyPathName(expectedProperty)}' is not of the same type as the property in the response. Expected type: '{expectedPropertyTypeName}'. Actual type: '{actual.Type}'");
+                AddWrongTypeError(expectedProperty, actual);
             }
+        }
+
+        private void CompareArrays(PropertyInfo expectedProperty, object expected, JToken actual)
+        {
+            if (!expectedProperty.PropertyType.IsArray)
+            {
+                AddWrongTypeError(expectedProperty, actual);
+                return;
+            }
+
+            var expectedArray = (Array)expected;
+
+            if (expectedArray.Length != actual.Children().Count())
+            {
+                _errors.Add($"The expected array property '{GetExpectedPropertyPathName(expectedProperty)}' is not of the same length as the array in the response. Expected length: '{expectedArray.Length}'. Actual length: '{actual.Children().Count()}'");
+                return;
+            }
+
+            for (var i = 0; i < expectedArray.Length; i++)
+            {
+                PushExpectedPropertyPath($"[{i}]");
+                var actualElement = actual.Children().ElementAt(i);
+                var expectedElement = expectedArray.GetValue(i);
+                CompareTypeAndValue(expectedProperty, expectedElement, actualElement);
+                PopExpectedPropertyPath();
+            }
+        }
+
+        private void AddWrongTypeError(PropertyInfo expectedProperty, JToken actual)
+        {
+            _errors.Add($"The expected property '{GetExpectedPropertyPathName(expectedProperty)}' is not of the same type as the property in the response. Expected type: '{GetExpectedPropertyTypeName(expectedProperty)}'. Actual type: '{actual.Type}'");
+        }
+
+        private string GetExpectedPropertyTypeName(PropertyInfo expectedProperty)
+        {
+            var type = expectedProperty.PropertyType;
+
+            if (expectedProperty.PropertyType.IsArray)
+                type = expectedProperty.PropertyType.GetElementType();
+
+            if (type.Name.Contains("AnonymousType"))
+                return "Object";
+
+            return type.Name;
         }
 
         private string GetExpectedPropertyPathName(PropertyInfo currentLevelExpectedProperty)
@@ -131,7 +179,10 @@ namespace Rigid.Asserts
             if (!_expectedPropertyPath.Any())
                 return currentLevelExpectedProperty.Name;
 
-            return string.Join(".", _expectedPropertyPath.Reverse()) + "." + currentLevelExpectedProperty.Name;
+            //if(_expectedPropertyPath.Last().Contains("["))
+
+
+            return string.Join(".", _expectedPropertyPath) + "." + currentLevelExpectedProperty.Name;
         }
 
         private static bool VerifyExpectedProperyValue(object expectedValue, JToken actualValue)
@@ -162,6 +213,16 @@ namespace Rigid.Asserts
                 default:
                     throw new ArgumentOutOfRangeException(nameof(expectedValue), expectedValue, $"The ExpectedProperyValue: '{expectedValue}' is not yet supported.");
             }
+        }
+
+        private void PushExpectedPropertyPath(string value)
+        {
+            _expectedPropertyPath.Add(value);
+        }
+
+        private void PopExpectedPropertyPath()
+        {
+            _expectedPropertyPath.Remove(_expectedPropertyPath.Last());
         }
     }
 }

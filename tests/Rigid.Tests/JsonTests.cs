@@ -192,5 +192,63 @@ namespace Rigid.Tests
             Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyFirstNestedObject.MySecondNestedObject.MyInt' does not have the same value as the property in the response. Expected value: '1234'. Actual value: '123'"));
             Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyFirstNestedObject.MySecondNestedObject.MyString' does not have the same value as the property in the response. Expected value: ':('. Actual value: 'Hello!!!!????'"));
         }
+
+        [Test]
+        public void Assert_json_correctly_handles_arrays()
+        {
+            var actual = new
+            {
+                MyInts = new [] { 1, 2, 4 }
+            };
+
+            Rigid.Get("https://www.google.com", () => CreateMockedJsonHttpClient(actual))
+                .AssertJson(new
+                {
+                    MyInts = new[] { 1, 2, 4 }
+                })
+                .Execute();
+        }
+
+        [Test]
+        public void Assert_json_correctly_generates_a_length_mismatch_error_for_arrays_of_different_lenghts()
+        {
+            var actual = new
+            {
+                MyInts = new[] { 1, 2, 4 }
+            };
+
+            var exception = Assert.Catch<AssertFailedException>(() =>
+            {
+                Rigid.Get("https://www.google.com", () => CreateMockedJsonHttpClient(actual))
+                    .AssertJson(new
+                    {
+                        MyInts = new[] {1, 2, 4, 5 }
+                    })
+                    .Execute();
+            });
+
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected array property 'MyInts' is not of the same length as the array in the response. Expected length: '4'. Actual length: '3'"));
+        }
+
+        [Test]
+        public void Assert_json_correctly_generates_a_type_mismatch_error_for_arrays_of_different_types()
+        {
+            var actual = new
+            {
+                MyInts = new[] { 1, 2, 4 }
+            };
+
+            var exception = Assert.Catch<AssertFailedException>(() =>
+            {
+                Rigid.Get("https://www.google.com", () => CreateMockedJsonHttpClient(actual))
+                    .AssertJson(new
+                    {
+                        MyInts = new[] { "1", "2", "4" }
+                    })
+                    .Execute();
+            });
+
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected array property 'MyInts' is not of the same length as the array in the response. Expected length: '4'. Actual length: '3'"));
+        }
     }
 }
