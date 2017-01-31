@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 
@@ -13,17 +14,24 @@ namespace Rigid.Matchers
             _regex = regex;
         }
 
-        public bool Match(JToken actualValue)
+        public MatchingResult Match(PropertyInfo expectedProperty, JToken actualValue)
         {
+            var success = false;
+
             try
             {
-                var actualValueStr = (string)actualValue;
-                return _regex.IsMatch(actualValueStr);
+                var actualValueStr =(string) actualValue;
+                success = _regex.IsMatch(actualValueStr);
             }
-            catch (Exception)
+            catch
             {
-                return false;
             }
+
+            return new MatchingResult
+            {
+                Success = success,
+                Message = success ? string.Empty : $"The RegexMatcher did not match the actual value: '{actualValue}'."
+            };
         }
     }
 }

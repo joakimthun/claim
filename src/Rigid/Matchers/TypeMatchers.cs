@@ -1,84 +1,99 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System.Reflection;
+using Newtonsoft.Json.Linq;
 
 namespace Rigid.Matchers
 {
+    internal static class TypeMatchingResultHelper
+    {
+        public static MatchingResult CreateMatchingResult(JTokenType expectedType, JToken actualValue)
+        {
+            var success = actualValue.Type == expectedType;
+
+            return new MatchingResult
+            {
+                Success = success,
+                Message = success ? string.Empty : $"Type mismatch. Expected: {expectedType}, Actual: {actualValue.Type}."
+            };
+        }
+    }
+
     public class StringMatcher : IMatcher
     {
-        public bool Match(JToken actualValue)
+        public MatchingResult Match(PropertyInfo expectedProperty, JToken actualValue)
         {
-            return actualValue.Type == JTokenType.String;
+            return TypeMatchingResultHelper.CreateMatchingResult(JTokenType.String, actualValue);
         }
     }
 
     public class ObjectMatcher : IMatcher
     {
-        public bool Match(JToken actualValue)
+        public MatchingResult Match(PropertyInfo expectedProperty, JToken actualValue)
         {
-            return actualValue.Type == JTokenType.Object;
+            return TypeMatchingResultHelper.CreateMatchingResult(JTokenType.Object, actualValue);
         }
     }
 
     public class ArrayMatcher : IMatcher
     {
-        public bool Match(JToken actualValue)
+        public MatchingResult Match(PropertyInfo expectedProperty, JToken actualValue)
         {
-            return actualValue.Type == JTokenType.Array;
+            return TypeMatchingResultHelper.CreateMatchingResult(JTokenType.Array, actualValue);
         }
     }
 
     public class IntMatcher : IMatcher
     {
-        public bool Match(JToken actualValue)
+        public MatchingResult Match(PropertyInfo expectedProperty, JToken actualValue)
         {
-            return actualValue.Type == JTokenType.Integer;
+            return TypeMatchingResultHelper.CreateMatchingResult(JTokenType.Integer, actualValue);
         }
     }
 
     public class FloatMatcher : IMatcher
     {
-        public bool Match(JToken actualValue)
+        public MatchingResult Match(PropertyInfo expectedProperty, JToken actualValue)
         {
-            return actualValue.Type == JTokenType.Float;
+            return TypeMatchingResultHelper.CreateMatchingResult(JTokenType.Float, actualValue);
         }
     }
 
     public class BooleanMatcher : IMatcher
     {
-        public bool Match(JToken actualValue)
+        public MatchingResult Match(PropertyInfo expectedProperty, JToken actualValue)
         {
-            return actualValue.Type == JTokenType.Boolean;
+            return TypeMatchingResultHelper.CreateMatchingResult(JTokenType.Boolean, actualValue);
         }
     }
 
     public class NullMatcher : IMatcher
     {
-        public bool Match(JToken actualValue)
+        public MatchingResult Match(PropertyInfo expectedProperty, JToken actualValue)
         {
-            return actualValue.Type == JTokenType.Null;
+            return TypeMatchingResultHelper.CreateMatchingResult(JTokenType.Null, actualValue);
         }
     }
 
     public class DateMatcher : IMatcher
     {
-        public bool Match(JToken actualValue)
+        public MatchingResult Match(PropertyInfo expectedProperty, JToken actualValue)
         {
-            return actualValue.Type == JTokenType.Date;
+            return TypeMatchingResultHelper.CreateMatchingResult(JTokenType.Date, actualValue);
         }
     }
 
     public class UriMatcher : IMatcher
     {
-        public bool Match(JToken actualValue)
+        public MatchingResult Match(PropertyInfo expectedProperty, JToken actualValue)
         {
-            return actualValue.Type == JTokenType.Uri;
+            return TypeMatchingResultHelper.CreateMatchingResult(JTokenType.Uri, actualValue);
         }
     }
 
     public class TimeSpanMatcher : IMatcher
     {
-        public bool Match(JToken actualValue)
+        public MatchingResult Match(PropertyInfo expectedProperty, JToken actualValue)
         {
-            return actualValue.Type == JTokenType.TimeSpan;
+            return TypeMatchingResultHelper.CreateMatchingResult(JTokenType.TimeSpan, actualValue);
         }
     }
 }

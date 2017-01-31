@@ -1,9 +1,16 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System.Reflection;
+using Newtonsoft.Json.Linq;
 
 namespace Rigid.Matchers
 {
+    public class MatchingResult
+    {
+        public bool Success { get; set; }
+        public string Message { get; set; }
+    }
+
     public interface IMatcher
     {
-        bool Match(JToken actualValue);
+        MatchingResult Match(PropertyInfo expectedProperty, JToken actualValue);
     }
 }

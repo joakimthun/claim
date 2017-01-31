@@ -34,6 +34,17 @@ namespace Rigid.Asserts
             _propertyComparison = propertyComparison;
         }
 
+        public static Result CompareArrays(PropertyInfo expectedProperty, object expected, JToken actual)
+        {
+            var assert = new JsonAssert(expected);
+            assert.CompareArraysInternal(expectedProperty, expected, actual);
+
+            if (assert._errors.Any())
+                return Result.Failed<JsonAssert>(assert._errors.ToNewLineSeparatedList());
+
+            return Result.Passed<JsonAssert>();
+        }
+
         public Result Assert(Response response)
         {
             Verify(_expectedResponseStructure, JObject.Parse(Encoding.UTF8.GetString(response.ResponseContent, 0, response.ResponseContent.Length)));
@@ -81,8 +92,9 @@ namespace Rigid.Asserts
             if (expectedProperty.PropertyType.ImplementsInterface<IMatcher>())
             {
                 var matcher = (IMatcher)expected;
-                if(!matcher.Match(actual))
-                    _errors.Add($"The property '{GetExpectedPropertyPathName(expectedProperty)}' did not match the specified matcher '{expectedProperty.PropertyType.Name}'. Actual value: '{actual}'. Actual type: '{actual.Type}'");
+                var matchingResult = matcher.Match(expectedProperty, actual);
+                if(!matchingResult.Success)
+                    _errors.Add($"The property '{GetExpectedPropertyPathName(expectedProperty)}' did not match the specified matcher. '{matchingResult.Message ?? string.Empty}'");
 
                 return;
             }
@@ -99,7 +111,7 @@ namespace Rigid.Asserts
             }
             if (actual.Type == JTokenType.Array)
             {
-                CompareArrays(expectedProperty, expected, actual);
+                CompareArraysInternal(expectedProperty, expected, actual);
                 return;
             }
 
@@ -116,7 +128,7 @@ namespace Rigid.Asserts
             }
         }
 
-        private void CompareArrays(PropertyInfo expectedProperty, object expected, JToken actual)
+        private void CompareArraysInternal(PropertyInfo expectedProperty, object expected, JToken actual)
         {
             if (!expectedProperty.PropertyType.IsArray)
             {

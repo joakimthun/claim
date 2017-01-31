@@ -22,12 +22,12 @@ namespace Rigid.Tests
                 }))
                 .AssertJson(new
                     {
-                        TestStr = Rigid.Matchers.String,
-                        TestInt = Rigid.Matchers.Int,
-                        TestFloat = Rigid.Matchers.Float,
+                        TestStr = Rigid.Matchers.Types.String,
+                        TestInt = Rigid.Matchers.Types.Int,
+                        TestFloat = Rigid.Matchers.Types.Float,
                         TestRegex = Rigid.Matchers.Regex(new Regex("^He")),
-                        TestArray = Rigid.Matchers.Array,
-                        TestObject = Rigid.Matchers.Object
+                        TestArray = Rigid.Matchers.Types.Array,
+                        TestObject = Rigid.Matchers.Types.Object
                     })
                 .Execute();
         }
@@ -48,22 +48,22 @@ namespace Rigid.Tests
                 }))
                 .AssertJson(new
                 {
-                    TestStr = Rigid.Matchers.Int,
-                    TestInt = Rigid.Matchers.String,
+                    TestStr = Rigid.Matchers.Types.Int,
+                    TestInt = Rigid.Matchers.Types.String,
                     TestFloat = Rigid.Matchers.Regex(new Regex("^He")),
-                    TestRegex = Rigid.Matchers.Float,
-                    TestArray = Rigid.Matchers.Object,
-                    TestObject = Rigid.Matchers.Array
+                    TestRegex = Rigid.Matchers.Types.Float,
+                    TestArray = Rigid.Matchers.Types.Object,
+                    TestObject = Rigid.Matchers.Types.Array
                 })
                 .Execute();
             });
 
-            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The property 'TestStr' did not match the specified matcher 'IntMatcher'. Actual value: '123'. Actual type: 'String'"));
-            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The property 'TestInt' did not match the specified matcher 'StringMatcher'. Actual value: '123'. Actual type: 'Integer'"));
-            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The property 'TestFloat' did not match the specified matcher 'RegexMatcher'. Actual value: '1.23'. Actual type: 'Float'"));
-            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The property 'TestRegex' did not match the specified matcher 'FloatMatcher'. Actual value: 'Hello!'. Actual type: 'String'"));
-            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The property 'TestArray' did not match the specified matcher 'ObjectMatcher'. Actual value: '["));
-            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The property 'TestObject' did not match the specified matcher 'ArrayMatcher'. Actual value: '{"));
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The property 'TestStr' did not match the specified matcher. 'Type mismatch. Expected: Integer, Actual: String.'"));
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The property 'TestInt' did not match the specified matcher. 'Type mismatch. Expected: String, Actual: Integer.'"));
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The property 'TestFloat' did not match the specified matcher. 'The RegexMatcher did not match the actual value: '1.23'.'"));
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The property 'TestRegex' did not match the specified matcher. 'Type mismatch. Expected: Float, Actual: String.'"));
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The property 'TestArray' did not match the specified matcher. 'Type mismatch. Expected: Object, Actual: Array.'"));
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The property 'TestObject' did not match the specified matcher. 'Type mismatch. Expected: Array, Actual: Object.'"));
         }
     }
 }
