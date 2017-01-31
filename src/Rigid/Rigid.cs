@@ -8,7 +8,9 @@ namespace Rigid
     public static class Rigid
     {
         public static GetRequest Get(string uri, Func<HttpClient> httpClientFactory = null) => new GetRequest(uri, httpClientFactory);
-        public static PostRequest Post(string uri, Func<HttpClient> httpClientFactory = null) => new PostRequest(uri, httpClientFactory);
+        public static PostRequest Post(string uri, HttpContent content, string contentType, Func<HttpClient> httpClientFactory = null) => new PostRequest(uri, content, contentType, httpClientFactory);
+        public static PostRequest Post(string uri, string jsonContent, Func<HttpClient> httpClientFactory = null) => new PostRequest(uri, jsonContent, httpClientFactory);
+        public static PostRequest Post(string uri, object jsonContent, Func<HttpClient> httpClientFactory = null) => new PostRequest(uri, jsonContent, httpClientFactory);
 
         public static class Matchers
         {
