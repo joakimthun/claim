@@ -56,20 +56,12 @@ namespace Rigid.Asserts
             return Passed<JsonAssert>();
         }
 
-        private void Verify(object expected, JObject actual, string parentExpectedProperty = null)
+        private void Verify(object expected, JObject actual)
         {
-            if (parentExpectedProperty != null)
-            {
-                PushExpectedPropertyPath(parentExpectedProperty);
-            }
-
             foreach (var property in expected.GetProperties())
             {
+                PushExpectedPropertyPath(property.Name);
                 VerifyProperty(property, expected, actual);
-            }
-
-            if (parentExpectedProperty != null)
-            {
                 PopExpectedPropertyPath();
             }
         }
@@ -108,7 +100,7 @@ namespace Rigid.Asserts
         {
             if (actual.Type == JTokenType.Object)
             {
-                Verify(expected, (JObject)actual, expectedProperty.Name);
+                Verify(expected, (JObject)actual);
                 return;
             }
             if (actual.Type == JTokenType.Array)
@@ -179,10 +171,7 @@ namespace Rigid.Asserts
             if (!_expectedPropertyPath.Any())
                 return currentLevelExpectedProperty.Name;
 
-            //if(_expectedPropertyPath.Last().Contains("["))
-
-
-            return string.Join(".", _expectedPropertyPath) + "." + currentLevelExpectedProperty.Name;
+            return string.Join(".", _expectedPropertyPath);
         }
 
         private static bool VerifyExpectedProperyValue(object expectedValue, JToken actualValue)

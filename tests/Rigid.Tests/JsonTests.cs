@@ -248,7 +248,9 @@ namespace Rigid.Tests
                     .Execute();
             });
 
-            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected array property 'MyInts' is not of the same length as the array in the response. Expected length: '4'. Actual length: '3'"));
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyInts.[0]' is not of the same type as the property in the response. Expected type: 'String'. Actual type: 'Integer'"));
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyInts.[1]' is not of the same type as the property in the response. Expected type: 'String'. Actual type: 'Integer'"));
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyInts.[2]' is not of the same type as the property in the response. Expected type: 'String'. Actual type: 'Integer'"));
         }
     }
 }
