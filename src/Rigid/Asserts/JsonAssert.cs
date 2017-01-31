@@ -32,7 +32,7 @@ namespace Rigid.Asserts
         private readonly object _expectedResponseStructure;
         private readonly PropertyComparison? _propertyComparison;
         private readonly ICollection<string> _errors = new List<string>();
-        private readonly ICollection<string> _expectedPropertyPath = new List<string>();
+        private readonly Stack<string> _expectedPropertyPath = new Stack<string>();
 
         public JsonAssert(object expectedResponseStructure, PropertyComparison? propertyComparison = null)
         {
@@ -171,7 +171,7 @@ namespace Rigid.Asserts
             if (!_expectedPropertyPath.Any())
                 return currentLevelExpectedProperty.Name;
 
-            return string.Join(".", _expectedPropertyPath);
+            return _expectedPropertyPath.Reverse().JsonObjectPathJoin();
         }
 
         private static bool VerifyExpectedProperyValue(object expectedValue, JToken actualValue)
@@ -206,12 +206,12 @@ namespace Rigid.Asserts
 
         private void PushExpectedPropertyPath(string value)
         {
-            _expectedPropertyPath.Add(value);
+            _expectedPropertyPath.Push(value);
         }
 
         private void PopExpectedPropertyPath()
         {
-            _expectedPropertyPath.Remove(_expectedPropertyPath.Last());
+            _expectedPropertyPath.Pop();
         }
     }
 }

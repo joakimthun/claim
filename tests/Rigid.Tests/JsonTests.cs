@@ -248,9 +248,9 @@ namespace Rigid.Tests
                     .Execute();
             });
 
-            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyInts.[0]' is not of the same type as the property in the response. Expected type: 'String'. Actual type: 'Integer'"));
-            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyInts.[1]' is not of the same type as the property in the response. Expected type: 'String'. Actual type: 'Integer'"));
-            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyInts.[2]' is not of the same type as the property in the response. Expected type: 'String'. Actual type: 'Integer'"));
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyInts[0]' is not of the same type as the property in the response. Expected type: 'String'. Actual type: 'Integer'"));
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyInts[1]' is not of the same type as the property in the response. Expected type: 'String'. Actual type: 'Integer'"));
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyInts[2]' is not of the same type as the property in the response. Expected type: 'String'. Actual type: 'Integer'"));
         }
 
         [Test]
@@ -293,9 +293,146 @@ namespace Rigid.Tests
                     .Execute();
             });
 
-            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyObjects.[0].MyFirstArrayObjectProp' is not of the same type as the property in the response. Expected type: 'Double'. Actual type: 'Integer'"));
-            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyObjects.[0].MySecondArrayObjectProp1' was not present in the response."));
-            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyObjects.[0].MyThirdArrayObjectProp' is not of the same type as the property in the response. Expected type: 'Int32'. Actual type: 'String'"));
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyObjects[0].MyFirstArrayObjectProp' is not of the same type as the property in the response. Expected type: 'Double'. Actual type: 'Integer'"));
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyObjects[0].MySecondArrayObjectProp1' was not present in the response."));
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyObjects[0].MyThirdArrayObjectProp' is not of the same type as the property in the response. Expected type: 'Int32'. Actual type: 'String'"));
+        }
+
+        [Test]
+        public void Assert_json_correctly_handles_nested_object_arrays()
+        {
+            var actual = new
+            {
+                MyObjects = new[]
+                {
+                    new
+                    {
+                        MyFirstArrayObjectProp = 1,
+                        MySecondArrayObjectProp = 2.0,
+                        MyNestedObjects = new[] 
+                            {
+                                new
+                                {
+                                    MyFirstArrayObjectProp = 1,
+                                    MySecondArrayObjectProp = 2,
+                                    MySecondLevelNestedObjects = new [] { "123" }
+                                },
+                                new
+                                {
+                                    MyFirstArrayObjectProp = 1,
+                                    MySecondArrayObjectProp = 2,
+                                    MySecondLevelNestedObjects = new [] { "123" }
+                                },
+                                new
+                                {
+                                    MyFirstArrayObjectProp = 1,
+                                    MySecondArrayObjectProp = 2,
+                                    MySecondLevelNestedObjects = new [] { "123" }
+                                }
+                            }
+                    }
+                }
+            };
+
+            Rigid.Get("https://www.test.com", () => CreateMockedJsonHttpClient(actual))
+                .AssertJson(actual)
+                .Execute();
+        }
+
+        [Test]
+        public void Assert_json_correctly_generates_errors_for_nested_arrays_of_objects_with_properties_of_different_types_or_names()
+        {
+            var actual = new
+            {
+                MyObjects = new[]
+                {
+                    new
+                    {
+                        MyFirstArrayObjectProp = 1,
+                        MySecondArrayObjectProp = 2.0,
+                        MyNestedObjects = new[]
+                            {
+                                new
+                                {
+                                    MyFirstArrayObjectProp = 1,
+                                    MySecondArrayObjectProp = 2,
+                                    MySecondLevelNestedObjects = new [] { "123" },
+                                    MyWrongValueProperty = 12
+                                },
+                                new
+                                {
+                                    MyFirstArrayObjectProp = 1,
+                                    MySecondArrayObjectProp = 2,
+                                    MySecondLevelNestedObjects = new [] { "123" },
+                                    MyWrongValueProperty = 12
+                                },
+                                new
+                                {
+                                    MyFirstArrayObjectProp = 1,
+                                    MySecondArrayObjectProp = 2,
+                                    MySecondLevelNestedObjects = new [] { "123" },
+                                    MyWrongValueProperty = 12
+                                }
+                            }
+                    }
+                }
+            };
+
+            var exception = Assert.Catch<AssertFailedException>(() =>
+            {
+                Rigid.Get("https://www.test.com", () => CreateMockedJsonHttpClient(actual))
+                    .AssertJson(new
+                    {
+                        MyObjects = new[]
+                        {
+                            new
+                            {
+                                MyFirstArrayObjectProp = "1", // Wrong Type
+                                MySecondArrayObjectProp = 2, // Wrong Type
+                                MyNestedObjects = new[]
+                                {
+                                    new
+                                    {
+                                        MyFirstArrayObjectProp1 = 1, // Wrong Name
+                                        MySecondArrayObjectProp = 2.0, // Wrong Type
+                                        MySecondLevelNestedObjects = new[] {123}, // Wrong Type
+                                        MyWrongValueProperty = 13 // Wrong Value
+                                    },
+                                    new
+                                    {
+                                        MyFirstArrayObjectProp1 = 1, // Wrong Name
+                                        MySecondArrayObjectProp = 2.0, // Wrong Type
+                                        MySecondLevelNestedObjects = new[] {123}, // Wrong Type
+                                        MyWrongValueProperty = 13 // Wrong Value
+                                    },
+                                    new
+                                    {
+                                        MyFirstArrayObjectProp1 = 1, // Wrong Name
+                                        MySecondArrayObjectProp = 2.0, // Wrong Type
+                                        MySecondLevelNestedObjects = new[] {123}, // Wrong Type
+                                        MyWrongValueProperty = 13 // Wrong Value
+                                    }
+                                }
+                            }
+                        }
+                    })
+                    .Execute();
+            });
+
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyObjects[0].MyFirstArrayObjectProp' is not of the same type as the property in the response. Expected type: 'String'. Actual type: 'Integer'"));
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyObjects[0].MySecondArrayObjectProp' is not of the same type as the property in the response. Expected type: 'Int32'. Actual type: 'Float'"));
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyObjects[0].MyNestedObjects[0].MyFirstArrayObjectProp1' was not present in the response."));
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyObjects[0].MyNestedObjects[0].MySecondArrayObjectProp' is not of the same type as the property in the response. Expected type: 'Double'. Actual type: 'Integer'"));
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyObjects[0].MyNestedObjects[0].MySecondLevelNestedObjects[0]' is not of the same type as the property in the response. Expected type: 'Int32'. Actual type: 'String'"));
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyObjects[0].MyNestedObjects[0].MyWrongValueProperty' does not have the same value as the property in the response. Expected value: '13'. Actual value: '12'"));
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyObjects[0].MyNestedObjects[1].MyFirstArrayObjectProp1' was not present in the response."));
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyObjects[0].MyNestedObjects[1].MySecondArrayObjectProp' is not of the same type as the property in the response. Expected type: 'Double'. Actual type: 'Integer'"));
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyObjects[0].MyNestedObjects[1].MySecondLevelNestedObjects[0]' is not of the same type as the property in the response. Expected type: 'Int32'. Actual type: 'String'"));
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyObjects[0].MyNestedObjects[1].MyWrongValueProperty' does not have the same value as the property in the response. Expected value: '13'. Actual value: '12'"));
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyObjects[0].MyNestedObjects[2].MyFirstArrayObjectProp1' was not present in the response."));
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyObjects[0].MyNestedObjects[2].MySecondArrayObjectProp' is not of the same type as the property in the response. Expected type: 'Double'. Actual type: 'Integer'"));
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyObjects[0].MyNestedObjects[2].MySecondLevelNestedObjects[0]' is not of the same type as the property in the response. Expected type: 'Int32'. Actual type: 'String'"));
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyObjects[0].MyNestedObjects[2].MyWrongValueProperty' does not have the same value as the property in the response. Expected value: '13'. Actual value: '12'"));
         }
     }
 }
