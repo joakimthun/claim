@@ -36,7 +36,7 @@ namespace Rigid.Asserts
 
         public Result Assert(Response response)
         {
-            Verify(_expectedResponseStructure, JObject.Parse(Encoding.UTF8.GetString(response.ResponseContent)));
+            Verify(_expectedResponseStructure, JObject.Parse(Encoding.UTF8.GetString(response.ResponseContent, 0, response.ResponseContent.Length)));
 
             if (_errors.Any())
                 return Result.Failed<JsonAssert>(_errors.ToNewLineSeparatedList());
