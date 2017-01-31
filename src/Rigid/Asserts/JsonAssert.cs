@@ -6,25 +6,13 @@ using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Rigid.Extensions;
+using Rigid.Matchers;
 
 namespace Rigid.Asserts
 {
     public enum PropertyComparison : byte
     {
         IgnoreCase
-    }
-
-    public enum ExpectedProperyValue : byte
-    {
-        Any,
-        Null,
-        String,
-        Int,
-        Bool,
-        Object,
-        Array,
-        Float,
-        Date
     }
 
     public class JsonAssert : Assert
@@ -90,8 +78,14 @@ namespace Rigid.Asserts
 
         private void VerifyProperty(PropertyInfo expectedProperty, object expected, JToken actual)
         {
-            if (VerifyExpectedProperyValue(expected, actual))
+            if (expectedProperty.PropertyType.ImplementsInterface<IMatcher>())
+            {
+                var matcher = (IMatcher)expected;
+                if(!matcher.Match(actual))
+                    _errors.Add($"The property '{GetExpectedPropertyPathName(expectedProperty)}' did not match the specified matcher '{expectedProperty.PropertyType.Name}'. Actual value: '{actual}'. Actual type: '{actual.Type}'");
+
                 return;
+            }
 
             CompareTypeAndValue(expectedProperty, expected, actual);
         }
@@ -172,36 +166,6 @@ namespace Rigid.Asserts
                 return currentLevelExpectedProperty.Name;
 
             return _expectedPropertyPath.Reverse().JsonObjectPathJoin();
-        }
-
-        private static bool VerifyExpectedProperyValue(object expectedValue, JToken actualValue)
-        {
-            if (!(expectedValue is ExpectedProperyValue))
-                return false;
-
-            switch ((ExpectedProperyValue)expectedValue)
-            {
-                case ExpectedProperyValue.Any:
-                    return true;
-                case ExpectedProperyValue.Null:
-                    return actualValue.Type == JTokenType.Null;
-                case ExpectedProperyValue.String:
-                    return actualValue.Type == JTokenType.String;
-                case ExpectedProperyValue.Int:
-                    return actualValue.Type == JTokenType.Integer;
-                case ExpectedProperyValue.Bool:
-                    return actualValue.Type == JTokenType.Boolean;
-                case ExpectedProperyValue.Object:
-                    return actualValue.Type == JTokenType.Object;
-                case ExpectedProperyValue.Array:
-                    return actualValue.Type == JTokenType.Array;
-                case ExpectedProperyValue.Float:
-                    return actualValue.Type == JTokenType.Float;
-                case ExpectedProperyValue.Date:
-                    return actualValue.Type == JTokenType.Date;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(expectedValue), expectedValue, $"The ExpectedProperyValue: '{expectedValue}' is not yet supported.");
-            }
         }
 
         private void PushExpectedPropertyPath(string value)
