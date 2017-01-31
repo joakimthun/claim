@@ -12,7 +12,7 @@ namespace Rigid.Tests
         [Test]
         public void Assert_json_does_not_throw_an_exception_for_a_property_and_value_match()
         {
-            Rigid.Get("https://www.google.com", () => CreateMockedJsonHttpClient("{ \"Test\": 123 }"))
+            Rigid.Get("https://www.test.com", () => CreateMockedJsonHttpClient("{ \"Test\": 123 }"))
                 .AssertJson(new
                     {
                         Test = 123
@@ -25,7 +25,7 @@ namespace Rigid.Tests
         {
             var exception = Assert.Catch<AssertFailedException>(() =>
             {
-                Rigid.Get("https://www.google.com", () => CreateMockedJsonHttpClient("{ \"Test\": 321 }"))
+                Rigid.Get("https://www.test.com", () => CreateMockedJsonHttpClient("{ \"Test\": 321 }"))
                     .AssertJson(new
                     {
                         Test = 123
@@ -41,7 +41,7 @@ namespace Rigid.Tests
         {
             var exception = Assert.Catch<AssertFailedException>(() =>
             {
-                Rigid.Get("https://www.google.com", () => CreateMockedJsonHttpClient("{ \"myProperty\": 321 }"))
+                Rigid.Get("https://www.test.com", () => CreateMockedJsonHttpClient("{ \"myProperty\": 321 }"))
                     .AssertJson(new
                     {
                         Test = 123
@@ -57,7 +57,7 @@ namespace Rigid.Tests
         {
             var exception = Assert.Catch<AssertFailedException>(() =>
             {
-                Rigid.Get("https://www.google.com", () => CreateMockedJsonHttpClient("{ \"myProperty\": 321 }"))
+                Rigid.Get("https://www.test.com", () => CreateMockedJsonHttpClient("{ \"myProperty\": 321 }"))
                     .AssertJson(new
                     {
                         MyProperty = 123
@@ -71,7 +71,7 @@ namespace Rigid.Tests
         [Test]
         public void Assert_json_does_not_throw_an_exception_for_a_property_name_case_mismatch_if_ignore_case_is_specified()
         {
-            Rigid.Get("https://www.google.com", () => CreateMockedJsonHttpClient("{ \"myProperty\": 123 }"))
+            Rigid.Get("https://www.test.com", () => CreateMockedJsonHttpClient("{ \"myProperty\": 123 }"))
                 .AssertJson(new
                 {
                     MyProperty = 123
@@ -89,7 +89,7 @@ namespace Rigid.Tests
                 MyString = "Hello!!!!????"
             };
 
-            Rigid.Get("https://www.google.com", () => CreateMockedJsonHttpClient(actual))
+            Rigid.Get("https://www.test.com", () => CreateMockedJsonHttpClient(actual))
                 .AssertJson(actual)
                 .Execute();
         }
@@ -99,7 +99,7 @@ namespace Rigid.Tests
         {
             var exception = Assert.Catch<AssertFailedException>(() =>
             {
-                Rigid.Get("https://www.google.com", () => CreateMockedJsonHttpClient(new {Test = 777}))
+                Rigid.Get("https://www.test.com", () => CreateMockedJsonHttpClient(new {Test = 777}))
                     .AssertJson(new
                     {
                         MyInt = 123,
@@ -136,7 +136,7 @@ namespace Rigid.Tests
                 }
             };
 
-            Rigid.Get("https://www.google.com", () => CreateMockedJsonHttpClient(actual))
+            Rigid.Get("https://www.test.com", () => CreateMockedJsonHttpClient(actual))
                 .AssertJson(actual)
                 .Execute();
         }
@@ -165,7 +165,7 @@ namespace Rigid.Tests
 
             var exception = Assert.Catch<AssertFailedException>(() =>
             {
-                Rigid.Get("https://www.google.com", () => CreateMockedJsonHttpClient(actual))
+                Rigid.Get("https://www.test.com", () => CreateMockedJsonHttpClient(actual))
                     .AssertJson(new
                     {
                         MyInt = 1234,
@@ -201,7 +201,7 @@ namespace Rigid.Tests
                 MyInts = new [] { 1, 2, 4 }
             };
 
-            Rigid.Get("https://www.google.com", () => CreateMockedJsonHttpClient(actual))
+            Rigid.Get("https://www.test.com", () => CreateMockedJsonHttpClient(actual))
                 .AssertJson(new
                 {
                     MyInts = new[] { 1, 2, 4 }
@@ -219,7 +219,7 @@ namespace Rigid.Tests
 
             var exception = Assert.Catch<AssertFailedException>(() =>
             {
-                Rigid.Get("https://www.google.com", () => CreateMockedJsonHttpClient(actual))
+                Rigid.Get("https://www.test.com", () => CreateMockedJsonHttpClient(actual))
                     .AssertJson(new
                     {
                         MyInts = new[] {1, 2, 4, 5 }
@@ -240,7 +240,7 @@ namespace Rigid.Tests
 
             var exception = Assert.Catch<AssertFailedException>(() =>
             {
-                Rigid.Get("https://www.google.com", () => CreateMockedJsonHttpClient(actual))
+                Rigid.Get("https://www.test.com", () => CreateMockedJsonHttpClient(actual))
                     .AssertJson(new
                     {
                         MyInts = new[] { "1", "2", "4" }
@@ -251,6 +251,51 @@ namespace Rigid.Tests
             Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyInts.[0]' is not of the same type as the property in the response. Expected type: 'String'. Actual type: 'Integer'"));
             Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyInts.[1]' is not of the same type as the property in the response. Expected type: 'String'. Actual type: 'Integer'"));
             Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyInts.[2]' is not of the same type as the property in the response. Expected type: 'String'. Actual type: 'Integer'"));
+        }
+
+        [Test]
+        public void Assert_json_correctly_handles_object_arrays()
+        {
+            var actual = new
+            {
+                MyObjects = new[]
+                {
+                   new { MyFirstArrayObjectProp = 1, MySecondArrayObjectProp = 2 }
+                }
+            };
+
+            Rigid.Get("https://www.test.com", () => CreateMockedJsonHttpClient(actual))
+                .AssertJson(actual)
+                .Execute();
+        }
+
+        [Test]
+        public void Assert_json_correctly_generates_errors_for_arrays_of_objects_with_properties_of_different_types_or_names()
+        {
+            var actual = new
+            {
+                MyObjects = new[]
+                {
+                   new { MyFirstArrayObjectProp = 1, MySecondArrayObjectProp = 2.0, MyThirdArrayObjectProp = "Hello!" }
+                }
+            };
+
+            var exception = Assert.Catch<AssertFailedException>(() =>
+            {
+                Rigid.Get("https://www.test.com", () => CreateMockedJsonHttpClient(actual))
+                    .AssertJson(new
+                    {
+                        MyObjects = new[]
+                        {
+                            new { MyFirstArrayObjectProp = 1.0, MySecondArrayObjectProp1 = 2.0, MyThirdArrayObjectProp = 1 }
+                        }
+                    })
+                    .Execute();
+            });
+
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyObjects.[0].MyFirstArrayObjectProp' is not of the same type as the property in the response. Expected type: 'Double'. Actual type: 'Integer'"));
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyObjects.[0].MySecondArrayObjectProp1' was not present in the response."));
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyObjects.[0].MyThirdArrayObjectProp' is not of the same type as the property in the response. Expected type: 'Int32'. Actual type: 'String'"));
         }
     }
 }
