@@ -5,7 +5,7 @@ using Rigid.Extensions;
 
 namespace Rigid.Asserts
 {
-    public class ContainsHeaderAssert : Assert
+    public class ContainsHeaderAssert : IAssert
     {
         private readonly string _name;
         private readonly IEnumerable<string> _values;
@@ -19,12 +19,12 @@ namespace Rigid.Asserts
             _values = values;
         }
 
-        public override Result Execute(Response response)
+        public Result Assert(Response response)
         {
             IEnumerable<string> actualValues;
             if (response.ResponseMessage.Headers.TryGetValues(_name, out actualValues))
             {
-                var failed = Failed<ContainsHeaderAssert>($"The actual header values does not match the expected header values. Expected: '{_values.ToCommaSeparatedList()}'. Actual: '{actualValues.ToCommaSeparatedList()}'.");
+                var failed = Result.Failed<ContainsHeaderAssert>($"The actual header values does not match the expected header values. Expected: '{_values.ToCommaSeparatedList()}'. Actual: '{actualValues.ToCommaSeparatedList()}'.");
 
                 if (_values.Count() != actualValues.Count())
                     return failed;
@@ -36,10 +36,10 @@ namespace Rigid.Asserts
                         return failed;
                 }
 
-                return Passed<ContainsHeaderAssert>();
+                return Result.Passed<ContainsHeaderAssert>();
             }
 
-            return Failed<ContainsHeaderAssert>($"The expected header '{_name}' was not present in the response.");
+            return Result.Failed<ContainsHeaderAssert>($"The expected header '{_name}' was not present in the response.");
         }
     }
 }

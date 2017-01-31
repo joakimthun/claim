@@ -14,7 +14,7 @@ namespace Rigid
         private readonly HttpClient _httpClient;
         private readonly HttpRequestMessage _httpRequest;
 
-        protected ICollection<Assert> Asserts = new List<Assert>();
+        protected ICollection<IAssert> Asserts = new List<IAssert>();
 
         public TRequest AssertStatus(HttpStatusCode expectedStatusCode)
         {
@@ -51,7 +51,7 @@ namespace Rigid
             BeforeSend(_httpRequest);
             var response = Send();
 
-            var result = Asserts.Select(a => a.Execute(response));
+            var result = Asserts.Select(a => a.Assert(response));
 
             var failedAsserts = result.Where(x => x.Status == ResultStatus.Failed).ToList();
             if (failedAsserts.Any())

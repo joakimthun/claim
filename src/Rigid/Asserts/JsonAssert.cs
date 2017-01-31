@@ -15,7 +15,7 @@ namespace Rigid.Asserts
         IgnoreCase
     }
 
-    public class JsonAssert : Assert
+    public class JsonAssert : IAssert
     {
         private readonly object _expectedResponseStructure;
         private readonly PropertyComparison? _propertyComparison;
@@ -34,14 +34,14 @@ namespace Rigid.Asserts
             _propertyComparison = propertyComparison;
         }
 
-        public override Result Execute(Response response)
+        public Result Assert(Response response)
         {
             Verify(_expectedResponseStructure, JObject.Parse(Encoding.UTF8.GetString(response.ResponseContent)));
 
             if (_errors.Any())
-                return Failed<JsonAssert>(_errors.ToNewLineSeparatedList());
+                return Result.Failed<JsonAssert>(_errors.ToNewLineSeparatedList());
 
-            return Passed<JsonAssert>();
+            return Result.Passed<JsonAssert>();
         }
 
         private void Verify(object expected, JObject actual)

@@ -2,7 +2,7 @@
 
 namespace Rigid.Asserts
 {
-    public class StatusCodeAssert : Assert
+    public class StatusCodeAssert : IAssert
     {
         private readonly HttpStatusCode _expectedStatusCode;
 
@@ -11,12 +11,12 @@ namespace Rigid.Asserts
             _expectedStatusCode = expectedStatusCode;
         }
 
-        public override Result Execute(Response response)
+        public Result Assert(Response response)
         {
             if(response.ResponseMessage.StatusCode != _expectedStatusCode)
-                return Failed<StatusCodeAssert>($"Expected status '{_expectedStatusCode}' but got status '{response.ResponseMessage.StatusCode}'.");
+                return Result.Failed<StatusCodeAssert>($"Expected status '{_expectedStatusCode}' but got status '{response.ResponseMessage.StatusCode}'.");
 
-            return Passed<StatusCodeAssert>();
+            return Result.Passed<StatusCodeAssert>();
         }
     }
 }
