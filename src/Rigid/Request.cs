@@ -18,31 +18,37 @@ namespace Rigid
 
         public TRequest AssertStatus(HttpStatusCode expectedStatusCode)
         {
-            Asserts.Add(new StatusCodeAssert(expectedStatusCode));
+            AddAssert(new StatusCodeAssert(expectedStatusCode));
             return this as TRequest;
         }
 
         public TRequest AssertContainsHeader(string name, IEnumerable<string> values)
         {
-            Asserts.Add(new ContainsHeaderAssert(name, values));
+            AddAssert(new ContainsHeaderAssert(name, values));
             return this as TRequest;
         }
 
         public TRequest AssertContainsHeader(string name, string value)
         {
-            Asserts.Add(new ContainsHeaderAssert(name, new []{ value }));
+            AddAssert(new ContainsHeaderAssert(name, new []{ value }));
             return this as TRequest;
         }
 
         public TRequest AssertJson(object expectedResponseStructure, PropertyComparison? propertyComparison = null)
         {
-            Asserts.Add(new JsonAssert(expectedResponseStructure, propertyComparison));
+            AddAssert(new JsonAssert(expectedResponseStructure, propertyComparison));
             return this as TRequest;
         }
 
         public TRequest AssertJson(string expectedResponseStructure, PropertyComparison? propertyComparison = null)
         {
-            Asserts.Add(new JsonAssert(expectedResponseStructure, propertyComparison));
+            AddAssert(new JsonAssert(expectedResponseStructure, propertyComparison));
+            return this as TRequest;
+        }
+
+        public TRequest AddAssert(IAssert assert)
+        {
+            Asserts.Add(assert);
             return this as TRequest;
         }
 
