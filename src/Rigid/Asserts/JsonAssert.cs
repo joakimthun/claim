@@ -6,7 +6,7 @@ using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Rigid.Extensions;
-using Rigid.Matchers;
+using Rigid.ValueMatchers;
 
 namespace Rigid.Asserts
 {
@@ -89,9 +89,9 @@ namespace Rigid.Asserts
 
         private void VerifyProperty(PropertyInfo expectedProperty, object expected, JToken actual)
         {
-            if (expectedProperty.PropertyType.ImplementsInterface<IMatcher>())
+            if (expectedProperty.PropertyType.ImplementsInterface<IPropertyValueMatcher>())
             {
-                var matcher = (IMatcher)expected;
+                var matcher = (IPropertyValueMatcher)expected;
                 var matchingResult = matcher.Match(expectedProperty, actual);
                 if(!matchingResult.Success)
                     _errors.Add($"The property '{GetExpectedPropertyPathName(expectedProperty)}' did not match the specified matcher. Message: {matchingResult.Message ?? string.Empty}.");

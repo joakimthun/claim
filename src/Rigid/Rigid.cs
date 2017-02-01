@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Text.RegularExpressions;
-using Rigid.Matchers;
+using Rigid.ValueMatchers;
 
 namespace Rigid
 {
@@ -27,18 +25,18 @@ namespace Rigid
         public static ContentRequest Put(string uri, object jsonContent, Func<HttpClient> httpClientFactory = null) =>
             new ContentRequest(HttpMethod.Put, uri, jsonContent, httpClientFactory);
 
-        public static class Matchers
+        public static class ValueMatchers
         {
-            public static StringMatcher String => new StringMatcher();
-            public static ObjectMatcher Object => new ObjectMatcher();
-            public static ArrayMatcher Array => new ArrayMatcher();
-            public static IntMatcher Int => new IntMatcher();
-            public static FloatMatcher Float => new FloatMatcher();
-            public static BooleanMatcher Boolean => new BooleanMatcher();
-            public static NullMatcher Null => new NullMatcher();
-            public static DateMatcher Date => new DateMatcher();
-            public static UriMatcher Uri => new UriMatcher();
-            public static TimeSpanMatcher TimeSpan => new TimeSpanMatcher();
+            public static StringTypeMatcher String => new StringTypeMatcher();
+            public static ObjectTypeMatcher Object => new ObjectTypeMatcher();
+            public static ArrayTypeMatcher Array => new ArrayTypeMatcher();
+            public static IntTypeMatcher Int => new IntTypeMatcher();
+            public static FloatTypeMatcher Float => new FloatTypeMatcher();
+            public static BoolTypeMatcher Boolean => new BoolTypeMatcher();
+            public static NullTypeMatcher Null => new NullTypeMatcher();
+            public static DateTypeMatcher Date => new DateTypeMatcher();
+            public static UriTypeMatcher Uri => new UriTypeMatcher();
+            public static TimeSpanTypeMatcher TimeSpan => new TimeSpanTypeMatcher();
 
             public static RegexMatcher Regex(string regex) => new RegexMatcher(regex);
             public static ConfigurableArrayMatcher ConfigurableArrayMatcher(IEnumerable<object> expected, bool matchLength) => 

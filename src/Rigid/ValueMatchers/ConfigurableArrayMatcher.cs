@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 
-namespace Rigid.Matchers
+namespace Rigid.ValueMatchers
 {
-    public class ConfigurableArrayMatcher : IMatcher
+    public class ConfigurableArrayMatcher : IPropertyValueMatcher
     {
         private readonly IEnumerable<object> _expected;
         private readonly bool _matchLength;

@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using Newtonsoft.Json.Linq;
 
-namespace Rigid.Matchers
+namespace Rigid.ValueMatchers
 {
     internal static class TypeMatchingResultHelper
     {
@@ -17,7 +17,7 @@ namespace Rigid.Matchers
         }
     }
 
-    public class StringMatcher : IMatcher
+    public class StringTypeMatcher : IPropertyValueMatcher
     {
         public MatchingResult Match(PropertyInfo expectedProperty, JToken actualValue)
         {
@@ -25,7 +25,7 @@ namespace Rigid.Matchers
         }
     }
 
-    public class ObjectMatcher : IMatcher
+    public class ObjectTypeMatcher : IPropertyValueMatcher
     {
         public MatchingResult Match(PropertyInfo expectedProperty, JToken actualValue)
         {
@@ -33,7 +33,7 @@ namespace Rigid.Matchers
         }
     }
 
-    public class ArrayMatcher : IMatcher
+    public class ArrayTypeMatcher : IPropertyValueMatcher
     {
         public MatchingResult Match(PropertyInfo expectedProperty, JToken actualValue)
         {
@@ -41,7 +41,7 @@ namespace Rigid.Matchers
         }
     }
 
-    public class IntMatcher : IMatcher
+    public class IntTypeMatcher : IPropertyValueMatcher
     {
         public MatchingResult Match(PropertyInfo expectedProperty, JToken actualValue)
         {
@@ -49,7 +49,7 @@ namespace Rigid.Matchers
         }
     }
 
-    public class FloatMatcher : IMatcher
+    public class FloatTypeMatcher : IPropertyValueMatcher
     {
         public MatchingResult Match(PropertyInfo expectedProperty, JToken actualValue)
         {
@@ -57,7 +57,7 @@ namespace Rigid.Matchers
         }
     }
 
-    public class BooleanMatcher : IMatcher
+    public class BoolTypeMatcher : IPropertyValueMatcher
     {
         public MatchingResult Match(PropertyInfo expectedProperty, JToken actualValue)
         {
@@ -65,7 +65,7 @@ namespace Rigid.Matchers
         }
     }
 
-    public class NullMatcher : IMatcher
+    public class NullTypeMatcher : IPropertyValueMatcher
     {
         public MatchingResult Match(PropertyInfo expectedProperty, JToken actualValue)
         {
@@ -73,7 +73,7 @@ namespace Rigid.Matchers
         }
     }
 
-    public class DateMatcher : IMatcher
+    public class DateTypeMatcher : IPropertyValueMatcher
     {
         public MatchingResult Match(PropertyInfo expectedProperty, JToken actualValue)
         {
@@ -81,7 +81,7 @@ namespace Rigid.Matchers
         }
     }
 
-    public class UriMatcher : IMatcher
+    public class UriTypeMatcher : IPropertyValueMatcher
     {
         public MatchingResult Match(PropertyInfo expectedProperty, JToken actualValue)
         {
@@ -89,7 +89,7 @@ namespace Rigid.Matchers
         }
     }
 
-    public class TimeSpanMatcher : IMatcher
+    public class TimeSpanTypeMatcher : IPropertyValueMatcher
     {
         public MatchingResult Match(PropertyInfo expectedProperty, JToken actualValue)
         {

@@ -1,11 +1,10 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 
-namespace Rigid.Matchers
+namespace Rigid.ValueMatchers
 {
-    public class RegexMatcher : IMatcher
+    public class RegexMatcher : IPropertyValueMatcher
     {
         private readonly Regex _regex;
 

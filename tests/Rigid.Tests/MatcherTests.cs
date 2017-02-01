@@ -22,12 +22,12 @@ namespace Rigid.Tests
                 }))
                 .AssertJson(new
                     {
-                        TestStr = Rigid.Matchers.String,
-                        TestInt = Rigid.Matchers.Int,
-                        TestFloat = Rigid.Matchers.Float,
-                        TestRegex = Rigid.Matchers.Regex("^He"),
-                        TestArray = Rigid.Matchers.Array,
-                        TestObject = Rigid.Matchers.Object
+                        TestStr = Rigid.ValueMatchers.String,
+                        TestInt = Rigid.ValueMatchers.Int,
+                        TestFloat = Rigid.ValueMatchers.Float,
+                        TestRegex = Rigid.ValueMatchers.Regex("^He"),
+                        TestArray = Rigid.ValueMatchers.Array,
+                        TestObject = Rigid.ValueMatchers.Object
                     })
                 .Execute();
         }
@@ -48,12 +48,12 @@ namespace Rigid.Tests
                 }))
                 .AssertJson(new
                 {
-                    TestStr = Rigid.Matchers.Int,
-                    TestInt = Rigid.Matchers.String,
-                    TestFloat = Rigid.Matchers.Regex("^He"),
-                    TestRegex = Rigid.Matchers.Float,
-                    TestArray = Rigid.Matchers.Object,
-                    TestObject = Rigid.Matchers.Array
+                    TestStr = Rigid.ValueMatchers.Int,
+                    TestInt = Rigid.ValueMatchers.String,
+                    TestFloat = Rigid.ValueMatchers.Regex("^He"),
+                    TestRegex = Rigid.ValueMatchers.Float,
+                    TestArray = Rigid.ValueMatchers.Object,
+                    TestObject = Rigid.ValueMatchers.Array
                 })
                 .Execute();
             });

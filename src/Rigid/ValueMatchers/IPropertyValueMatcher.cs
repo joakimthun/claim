@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using Newtonsoft.Json.Linq;
 
-namespace Rigid.Matchers
+namespace Rigid.ValueMatchers
 {
     public class MatchingResult
     {
@@ -9,7 +9,7 @@ namespace Rigid.Matchers
         public string Message { get; set; }
     }
 
-    public interface IMatcher
+    public interface IPropertyValueMatcher
     {
         MatchingResult Match(PropertyInfo expectedProperty, JToken actualValue);
     }
