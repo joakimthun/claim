@@ -1,7 +1,17 @@
 {
-    "version": "0.1",
+    "version": "1.0-alpha",
+    "name": "joakimthun.rigid",
+    "title": "rigid",
     "authors": [ "Joakim Thun" ],
     "description": "A tiny library for testing APIs",
+
+    "packOptions": {
+        "owners": [ "Joakim Thun" ],
+        "projectUrl": "https://github.com/joakimthun/rigid",
+        "licenseUrl": "https://github.com/joakimthun/rigid/blob/master/licence",
+        "requireLicenseAcceptance": false,
+        "tags": [ "test", "testing", "assert", "api-testing" ]
+    },
 
     "dependencies": {
         "NETStandard.Library": "1.6.1",
