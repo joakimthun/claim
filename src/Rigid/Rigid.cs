@@ -39,8 +39,8 @@ namespace Rigid
             public static TimeSpanTypeMatcher TimeSpan => new TimeSpanTypeMatcher();
 
             public static RegexMatcher Regex(string regex) => new RegexMatcher(regex);
-            public static ConfigurableArrayMatcher ConfigurableArrayMatcher(Array expected, bool matchLength) => 
-                new ConfigurableArrayMatcher(expected, matchLength);
+            public static ConfigurableJsonArrayMatcher ConfigurableJsonArrayMatcher(Array expected, bool matchLength) => 
+                new ConfigurableJsonArrayMatcher(expected, matchLength);
         }
     }
 }

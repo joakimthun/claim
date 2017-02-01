@@ -82,8 +82,8 @@ namespace Rigid.Tests
             }))
             .AssertJson(new
             {
-                IntArray = Rigid.ValueMatchers.ConfigurableArrayMatcher(new []{ 1, 2 }, false),
-                ObjectArray = Rigid.ValueMatchers.ConfigurableArrayMatcher(new[]
+                IntArray = Rigid.ValueMatchers.ConfigurableJsonArrayMatcher(new []{ 1, 2 }, false),
+                ObjectArray = Rigid.ValueMatchers.ConfigurableJsonArrayMatcher(new[]
                 {
                     new { StrProperty = Rigid.ValueMatchers.String },
                     new { StrProperty = Rigid.ValueMatchers.String },
@@ -112,8 +112,8 @@ namespace Rigid.Tests
                     }))
                     .AssertJson(new
                     {
-                        IntArray = Rigid.ValueMatchers.ConfigurableArrayMatcher(new[] {1, 2}, true),
-                        ObjectArray = Rigid.ValueMatchers.ConfigurableArrayMatcher(new[]
+                        IntArray = Rigid.ValueMatchers.ConfigurableJsonArrayMatcher(new[] {1, 2}, true),
+                        ObjectArray = Rigid.ValueMatchers.ConfigurableJsonArrayMatcher(new[]
                         {
                             new {StrProperty = Rigid.ValueMatchers.Int},
                             new {StrProperty = Rigid.ValueMatchers.Int},

@@ -6,12 +6,12 @@ using Rigid.Asserts;
 
 namespace Rigid.ValueMatchers
 {
-    public class ConfigurableArrayMatcher : IPropertyValueMatcher
+    public class ConfigurableJsonArrayMatcher : IPropertyValueMatcher
     {
         private readonly Array _expected;
         private readonly bool _matchLength;
 
-        public ConfigurableArrayMatcher(Array expected, bool matchLength)
+        public ConfigurableJsonArrayMatcher(Array expected, bool matchLength)
         {
             _expected = expected;
             _matchLength = matchLength;
