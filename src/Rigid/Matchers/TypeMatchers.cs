@@ -12,7 +12,7 @@ namespace Rigid.Matchers
             return new MatchingResult
             {
                 Success = success,
-                Message = success ? string.Empty : $"Type mismatch. Expected: {expectedType}, Actual: {actualValue.Type}."
+                Message = success ? string.Empty : $"Type mismatch. Expected: '{expectedType}', Actual: '{actualValue.Type}'"
             };
         }
     }

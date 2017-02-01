@@ -94,7 +94,7 @@ namespace Rigid.Asserts
                 var matcher = (IMatcher)expected;
                 var matchingResult = matcher.Match(expectedProperty, actual);
                 if(!matchingResult.Success)
-                    _errors.Add($"The property '{GetExpectedPropertyPathName(expectedProperty)}' did not match the specified matcher. '{matchingResult.Message ?? string.Empty}'");
+                    _errors.Add($"The property '{GetExpectedPropertyPathName(expectedProperty)}' did not match the specified matcher. Message: {matchingResult.Message ?? string.Empty}.");
 
                 return;
             }
