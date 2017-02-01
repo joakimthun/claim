@@ -25,7 +25,7 @@ namespace Rigid.Tests
                         TestStr = Rigid.Matchers.String,
                         TestInt = Rigid.Matchers.Int,
                         TestFloat = Rigid.Matchers.Float,
-                        TestRegex = Rigid.Matchers.Regex(new Regex("^He")),
+                        TestRegex = Rigid.Matchers.Regex("^He"),
                         TestArray = Rigid.Matchers.Array,
                         TestObject = Rigid.Matchers.Object
                     })
@@ -50,7 +50,7 @@ namespace Rigid.Tests
                 {
                     TestStr = Rigid.Matchers.Int,
                     TestInt = Rigid.Matchers.String,
-                    TestFloat = Rigid.Matchers.Regex(new Regex("^He")),
+                    TestFloat = Rigid.Matchers.Regex("^He"),
                     TestRegex = Rigid.Matchers.Float,
                     TestArray = Rigid.Matchers.Object,
                     TestObject = Rigid.Matchers.Array

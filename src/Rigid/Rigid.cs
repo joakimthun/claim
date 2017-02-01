@@ -40,7 +40,7 @@ namespace Rigid
             public static UriMatcher Uri => new UriMatcher();
             public static TimeSpanMatcher TimeSpan => new TimeSpanMatcher();
 
-            public static RegexMatcher Regex(Regex r) => new RegexMatcher(r);
+            public static RegexMatcher Regex(string regex) => new RegexMatcher(regex);
             public static ConfigurableArrayMatcher ConfigurableArrayMatcher(IEnumerable<object> expected, bool matchLength) => 
                 new ConfigurableArrayMatcher(expected, matchLength);
         }

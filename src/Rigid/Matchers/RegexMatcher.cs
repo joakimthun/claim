@@ -9,9 +9,9 @@ namespace Rigid.Matchers
     {
         private readonly Regex _regex;
 
-        public RegexMatcher(Regex regex)
+        public RegexMatcher(string regex)
         {
-            _regex = regex;
+            _regex = new Regex(regex);
         }
 
         public MatchingResult Match(PropertyInfo expectedProperty, JToken actualValue)
