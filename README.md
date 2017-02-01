@@ -15,7 +15,7 @@ A tiny framework for testing APIs
     .Execute();
 ```
 
-### Http Method support
+### Request method support
 Rigid currently supports Get, Post, Put and Delete requests through the 
 static Rigid class e.g. Rigid.Get(...).
 
