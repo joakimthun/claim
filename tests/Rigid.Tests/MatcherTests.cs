@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using System.Text.RegularExpressions;
 using NUnit.Framework;
 using Rigid.Exceptions;
 
@@ -64,6 +63,70 @@ namespace Rigid.Tests
             Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The property 'TestRegex' did not match the specified matcher. Message: Type mismatch. Expected: 'Float', Actual: 'String'."));
             Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The property 'TestArray' did not match the specified matcher. Message: Type mismatch. Expected: 'Object', Actual: 'Array'."));
             Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The property 'TestObject' did not match the specified matcher. Message: Type mismatch. Expected: 'Array', Actual: 'Object'."));
+        }
+
+        [Test]
+        public void Configurable_array_matcher_handles_variable_length_arrays_correctly()
+        {
+            Rigid.Get("https://www.test.com", () => CreateMockedJsonHttpClient(new
+            {
+                IntArray = new[] { 1, 2, 3 },
+                ObjectArray = new[]
+                {
+                    new { StrProperty = "123" },
+                    new { StrProperty = "456" },
+                    new { StrProperty = "789" },
+                    new { StrProperty = "999" }
+                }
+
+            }))
+            .AssertJson(new
+            {
+                IntArray = Rigid.ValueMatchers.ConfigurableArrayMatcher(new []{ 1, 2 }, false),
+                ObjectArray = Rigid.ValueMatchers.ConfigurableArrayMatcher(new[]
+                {
+                    new { StrProperty = Rigid.ValueMatchers.String },
+                    new { StrProperty = Rigid.ValueMatchers.String },
+                    new { StrProperty = Rigid.ValueMatchers.String }
+                }, false)
+            })
+            .Execute();
+        }
+
+        [Test]
+        public void Configurable_array_matcher_creates_error_messages_correctly()
+        {
+            var exception = Assert.Catch<AssertFailedException>(() =>
+            {
+                Rigid.Get("https://www.test.com", () => CreateMockedJsonHttpClient(new
+                    {
+                        IntArray = new[] {1, 2, 3},
+                        ObjectArray = new[]
+                        {
+                            new {StrProperty = "123"},
+                            new {StrProperty = "456"},
+                            new {StrProperty = "789"},
+                            new {StrProperty = "999"}
+                        }
+
+                    }))
+                    .AssertJson(new
+                    {
+                        IntArray = Rigid.ValueMatchers.ConfigurableArrayMatcher(new[] {1, 2}, true),
+                        ObjectArray = Rigid.ValueMatchers.ConfigurableArrayMatcher(new[]
+                        {
+                            new {StrProperty = Rigid.ValueMatchers.Int},
+                            new {StrProperty = Rigid.ValueMatchers.Int},
+                            new {StrProperty = Rigid.ValueMatchers.Int}
+                        }, false)
+                    })
+                    .Execute();
+            });
+
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The property 'IntArray' did not match the specified matcher. Message: The expected array property 'IntArray' is not of the same length as the array in the response. Expected length: '2'. Actual length: '3'"));
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The property 'ObjectArray' did not match the specified matcher. Message: The property 'ObjectArray[0].StrProperty' did not match the specified matcher. Message: Type mismatch. Expected: 'Integer', Actual: 'String'."));
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The property 'ObjectArray' did not match the specified matcher. Message: The property 'ObjectArray[1].StrProperty' did not match the specified matcher. Message: Type mismatch. Expected: 'Integer', Actual: 'String'."));
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The property 'ObjectArray' did not match the specified matcher. Message: The property 'ObjectArray[2].StrProperty' did not match the specified matcher. Message: Type mismatch. Expected: 'Integer', Actual: 'String'."));
         }
     }
 }

@@ -34,15 +34,15 @@ namespace Rigid.Asserts
             _propertyComparison = propertyComparison;
         }
 
-        public static Result CompareArrays(PropertyInfo expectedProperty, object expected, JToken actual)
+        public static IEnumerable<string> CompareArrays(PropertyInfo expectedProperty, object expected, JToken actual, bool matchLength, bool checkPropertyType)
         {
             var assert = new JsonAssert(expected);
-            assert.CompareArraysInternal(expectedProperty, expected, actual);
 
-            if (assert._errors.Any())
-                return Result.Failed<JsonAssert>(assert._errors.ToNewLineSeparatedList());
+            assert.PushExpectedPropertyPath(expectedProperty.Name);
+            assert.CompareArraysInternal(expectedProperty, expected, actual, matchLength, checkPropertyType);
+            assert.PopExpectedPropertyPath();
 
-            return Result.Passed<JsonAssert>();
+            return assert._errors;
         }
 
         public Result Assert(Response response)
@@ -93,8 +93,10 @@ namespace Rigid.Asserts
             {
                 var matcher = (IPropertyValueMatcher)expected;
                 var matchingResult = matcher.Match(expectedProperty, actual);
-                if(!matchingResult.Success)
-                    _errors.Add($"The property '{GetExpectedPropertyPathName(expectedProperty)}' did not match the specified matcher. Message: {matchingResult.Message ?? string.Empty}.");
+                if (!matchingResult.Success)
+                {
+                    matchingResult.Messages.ForEach(msg => _errors.Add($"The property '{GetExpectedPropertyPathName(expectedProperty)}' did not match the specified matcher. Message: {msg ?? string.Empty}"));
+                }
 
                 return;
             }
@@ -128,9 +130,9 @@ namespace Rigid.Asserts
             }
         }
 
-        private void CompareArraysInternal(PropertyInfo expectedProperty, object expected, JToken actual)
+        private void CompareArraysInternal(PropertyInfo expectedProperty, object expected, JToken actual, bool matchLength = true, bool checkPropertyType = true)
         {
-            if (!expectedProperty.PropertyType.IsArray)
+            if (checkPropertyType && !expectedProperty.PropertyType.IsArray)
             {
                 AddWrongTypeError(expectedProperty, actual);
                 return;
@@ -138,7 +140,7 @@ namespace Rigid.Asserts
 
             var expectedArray = (Array)expected;
 
-            if (expectedArray.Length != actual.Children().Count())
+            if (matchLength && (expectedArray.Length != actual.Children().Count()))
             {
                 _errors.Add($"The expected array property '{GetExpectedPropertyPathName(expectedProperty)}' is not of the same length as the array in the response. Expected length: '{expectedArray.Length}'. Actual length: '{actual.Children().Count()}'");
                 return;
@@ -146,10 +148,15 @@ namespace Rigid.Asserts
 
             for (var i = 0; i < expectedArray.Length; i++)
             {
+                var actualElement = actual.Children().ElementAtOrDefault(i);
+                if(actualElement == null)
+                    break;
+
                 PushExpectedPropertyPath($"[{i}]");
-                var actualElement = actual.Children().ElementAt(i);
+
                 var expectedElement = expectedArray.GetValue(i);
                 CompareTypeAndValue(expectedProperty, expectedElement, actualElement);
+
                 PopExpectedPropertyPath();
             }
         }
