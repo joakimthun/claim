@@ -1,5 +1,7 @@
 {
-  "version": "1.0.0-*",
+    "version": "0.1",
+    "authors": [ "Joakim Thun" ],
+    "description": "A tiny library for testing APIs",
 
     "dependencies": {
         "NETStandard.Library": "1.6.1",
@@ -7,9 +9,9 @@
         "System.Reflection.TypeExtensions": "4.3.0"
     },
 
-  "frameworks": {
-    "netstandard1.1": {
-      "imports": "dnxcore50"
+    "frameworks": {
+        "netstandard1.1": {
+            "imports": "dnxcore50"
+        }
     }
-  }
 }
