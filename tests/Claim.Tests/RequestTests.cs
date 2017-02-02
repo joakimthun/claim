@@ -14,7 +14,7 @@ namespace Claim.Tests
         [Test]
         public void Assert_status_ok_does_not_throw_an_excepetion_if_the_status_is_ok()
         {
-            Claim.Get("https://www.test.com", () => CreateMockedHttpClient(HttpStatusCode.OK))
+            Claims.Get("https://www.test.com", () => CreateMockedHttpClient(HttpStatusCode.OK))
                 .AssertStatus(HttpStatusCode.OK)
                 .Execute();
         }
@@ -24,7 +24,7 @@ namespace Claim.Tests
         {
             var exception = Assert.Catch<AssertFailedException>(() =>
             {
-                Claim.Get("https://www.test.com", () => CreateMockedHttpClient(HttpStatusCode.BadGateway))
+                Claims.Get("https://www.test.com", () => CreateMockedHttpClient(HttpStatusCode.BadGateway))
                     .AssertStatus(HttpStatusCode.OK)
                     .Execute();
             });
@@ -35,7 +35,7 @@ namespace Claim.Tests
         [Test]
         public void Assert_contains_a_single_header_does_not_throw_an_excepetion_if_the_header_is_a_match()
         {
-            Claim.Get("https://www.test.com", () => CreateMockedHttpClient(HttpStatusCode.OK, headers: new List<KeyValuePair<string, IEnumerable<string>>> { new KeyValuePair<string, IEnumerable<string>>("my_key", new []{ "my_value" }) }))
+            Claims.Get("https://www.test.com", () => CreateMockedHttpClient(HttpStatusCode.OK, headers: new List<KeyValuePair<string, IEnumerable<string>>> { new KeyValuePair<string, IEnumerable<string>>("my_key", new []{ "my_value" }) }))
                 .AssertContainsHeader("my_key", "my_value")
                 .Execute();
         }
@@ -45,7 +45,7 @@ namespace Claim.Tests
         {
             var exception = Assert.Catch<AssertFailedException>(() =>
             {
-                Claim.Get("https://www.test.com", () => CreateMockedHttpClient(HttpStatusCode.OK))
+                Claims.Get("https://www.test.com", () => CreateMockedHttpClient(HttpStatusCode.OK))
                     .AssertContainsHeader("my_key", "my_value")
                     .Execute();
             });
@@ -56,7 +56,7 @@ namespace Claim.Tests
         [Test]
         public void Assert_contains_multiple_headers_does_not_throw_an_excepetion_if_the_headers_are_a_match()
         {
-            Claim.Get(
+            Claims.Get(
                     "https://www.test.com",
                     () => CreateMockedHttpClient(HttpStatusCode.OK, headers: new List<KeyValuePair<string, IEnumerable<string>>> { new KeyValuePair<string, IEnumerable<string>>("my_key", new[] { "my_value1", "my_value2" }) }))
                 .AssertContainsHeader("my_key", new [] { "my_value1", "my_value2" })
@@ -68,7 +68,7 @@ namespace Claim.Tests
         {
             var exception = Assert.Catch<AssertFailedException>(() =>
             {
-                Claim.Get("https://www.test.com", () => CreateMockedHttpClient(HttpStatusCode.OK))
+                Claims.Get("https://www.test.com", () => CreateMockedHttpClient(HttpStatusCode.OK))
                     .AssertContainsHeader("my_key", new[] { "my_value1", "my_value2" })
                     .Execute();
             });
@@ -77,7 +77,7 @@ namespace Claim.Tests
 
             exception = Assert.Catch<AssertFailedException>(() =>
             {
-                Claim.Get("https://www.test.com", () => CreateMockedHttpClient(HttpStatusCode.OK, headers: new List<KeyValuePair<string, IEnumerable<string>>> { new KeyValuePair<string, IEnumerable<string>>("my_key", new[] { "my_value11", "my_value22" }) }))
+                Claims.Get("https://www.test.com", () => CreateMockedHttpClient(HttpStatusCode.OK, headers: new List<KeyValuePair<string, IEnumerable<string>>> { new KeyValuePair<string, IEnumerable<string>>("my_key", new[] { "my_value11", "my_value22" }) }))
                     .AssertContainsHeader("my_key", new[] { "my_value1", "my_value2" })
                     .Execute();
             });
@@ -86,7 +86,7 @@ namespace Claim.Tests
 
             exception = Assert.Catch<AssertFailedException>(() =>
             {
-                Claim.Get("https://www.test.com", () => CreateMockedHttpClient(HttpStatusCode.OK, headers: new List<KeyValuePair<string, IEnumerable<string>>> { new KeyValuePair<string, IEnumerable<string>>("my_key", new[] { "my_value1", "my_value2" }) }))
+                Claims.Get("https://www.test.com", () => CreateMockedHttpClient(HttpStatusCode.OK, headers: new List<KeyValuePair<string, IEnumerable<string>>> { new KeyValuePair<string, IEnumerable<string>>("my_key", new[] { "my_value1", "my_value2" }) }))
                     .AssertContainsHeader("my_key2", new[] { "my_value1", "my_value2" })
                     .Execute();
             });
@@ -95,7 +95,7 @@ namespace Claim.Tests
 
             exception = Assert.Catch<AssertFailedException>(() =>
             {
-                Claim.Get("https://www.test.com", () => CreateMockedHttpClient(HttpStatusCode.OK, headers: new List<KeyValuePair<string, IEnumerable<string>>> { new KeyValuePair<string, IEnumerable<string>>("my_key", new[] { "my_value1" }) }))
+                Claims.Get("https://www.test.com", () => CreateMockedHttpClient(HttpStatusCode.OK, headers: new List<KeyValuePair<string, IEnumerable<string>>> { new KeyValuePair<string, IEnumerable<string>>("my_key", new[] { "my_value1" }) }))
                     .AssertContainsHeader("my_key", new[] { "my_value1", "my_value2" })
                     .Execute();
             });

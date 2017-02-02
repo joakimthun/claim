@@ -12,7 +12,7 @@ namespace Claim.Tests
         [Test]
         public void Assert_json_does_not_throw_an_exception_for_a_property_and_value_match()
         {
-            Claim.Get("https://www.test.com", () => CreateMockedJsonHttpClient("{ \"Test\": 123 }"))
+            Claims.Get("https://www.test.com", () => CreateMockedJsonHttpClient("{ \"Test\": 123 }"))
                 .AssertJson(new
                     {
                         Test = 123
@@ -25,7 +25,7 @@ namespace Claim.Tests
         {
             var exception = Assert.Catch<AssertFailedException>(() =>
             {
-                Claim.Get("https://www.test.com", () => CreateMockedJsonHttpClient("{ \"Test\": 321 }"))
+                Claims.Get("https://www.test.com", () => CreateMockedJsonHttpClient("{ \"Test\": 321 }"))
                     .AssertJson(new
                     {
                         Test = 123
@@ -41,7 +41,7 @@ namespace Claim.Tests
         {
             var exception = Assert.Catch<AssertFailedException>(() =>
             {
-                Claim.Get("https://www.test.com", () => CreateMockedJsonHttpClient("{ \"myProperty\": 321 }"))
+                Claims.Get("https://www.test.com", () => CreateMockedJsonHttpClient("{ \"myProperty\": 321 }"))
                     .AssertJson(new
                     {
                         Test = 123
@@ -57,7 +57,7 @@ namespace Claim.Tests
         {
             var exception = Assert.Catch<AssertFailedException>(() =>
             {
-                Claim.Get("https://www.test.com", () => CreateMockedJsonHttpClient("{ \"myProperty\": 321 }"))
+                Claims.Get("https://www.test.com", () => CreateMockedJsonHttpClient("{ \"myProperty\": 321 }"))
                     .AssertJson(new
                     {
                         MyProperty = 123
@@ -71,7 +71,7 @@ namespace Claim.Tests
         [Test]
         public void Assert_json_does_not_throw_an_exception_for_a_property_name_case_mismatch_if_ignore_case_is_specified()
         {
-            Claim.Get("https://www.test.com", () => CreateMockedJsonHttpClient("{ \"myProperty\": 123 }"))
+            Claims.Get("https://www.test.com", () => CreateMockedJsonHttpClient("{ \"myProperty\": 123 }"))
                 .AssertJson(new
                 {
                     MyProperty = 123
@@ -89,7 +89,7 @@ namespace Claim.Tests
                 MyString = "Hello!!!!????"
             };
 
-            Claim.Get("https://www.test.com", () => CreateMockedJsonHttpClient(actual))
+            Claims.Get("https://www.test.com", () => CreateMockedJsonHttpClient(actual))
                 .AssertJson(actual)
                 .Execute();
         }
@@ -99,7 +99,7 @@ namespace Claim.Tests
         {
             var exception = Assert.Catch<AssertFailedException>(() =>
             {
-                Claim.Get("https://www.test.com", () => CreateMockedJsonHttpClient(new {Test = 777}))
+                Claims.Get("https://www.test.com", () => CreateMockedJsonHttpClient(new {Test = 777}))
                     .AssertJson(new
                     {
                         MyInt = 123,
@@ -136,7 +136,7 @@ namespace Claim.Tests
                 }
             };
 
-            Claim.Get("https://www.test.com", () => CreateMockedJsonHttpClient(actual))
+            Claims.Get("https://www.test.com", () => CreateMockedJsonHttpClient(actual))
                 .AssertJson(actual)
                 .Execute();
         }
@@ -165,7 +165,7 @@ namespace Claim.Tests
 
             var exception = Assert.Catch<AssertFailedException>(() =>
             {
-                Claim.Get("https://www.test.com", () => CreateMockedJsonHttpClient(actual))
+                Claims.Get("https://www.test.com", () => CreateMockedJsonHttpClient(actual))
                     .AssertJson(new
                     {
                         MyInt = 1234,
@@ -201,7 +201,7 @@ namespace Claim.Tests
                 MyInts = new [] { 1, 2, 4 }
             };
 
-            Claim.Get("https://www.test.com", () => CreateMockedJsonHttpClient(actual))
+            Claims.Get("https://www.test.com", () => CreateMockedJsonHttpClient(actual))
                 .AssertJson(new
                 {
                     MyInts = new[] { 1, 2, 4 }
@@ -219,7 +219,7 @@ namespace Claim.Tests
 
             var exception = Assert.Catch<AssertFailedException>(() =>
             {
-                Claim.Get("https://www.test.com", () => CreateMockedJsonHttpClient(actual))
+                Claims.Get("https://www.test.com", () => CreateMockedJsonHttpClient(actual))
                     .AssertJson(new
                     {
                         MyInts = new[] {1, 2, 4, 5 }
@@ -240,7 +240,7 @@ namespace Claim.Tests
 
             var exception = Assert.Catch<AssertFailedException>(() =>
             {
-                Claim.Get("https://www.test.com", () => CreateMockedJsonHttpClient(actual))
+                Claims.Get("https://www.test.com", () => CreateMockedJsonHttpClient(actual))
                     .AssertJson(new
                     {
                         MyInts = new[] { "1", "2", "4" }
@@ -264,7 +264,7 @@ namespace Claim.Tests
                 }
             };
 
-            Claim.Get("https://www.test.com", () => CreateMockedJsonHttpClient(actual))
+            Claims.Get("https://www.test.com", () => CreateMockedJsonHttpClient(actual))
                 .AssertJson(actual)
                 .Execute();
         }
@@ -282,7 +282,7 @@ namespace Claim.Tests
 
             var exception = Assert.Catch<AssertFailedException>(() =>
             {
-                Claim.Get("https://www.test.com", () => CreateMockedJsonHttpClient(actual))
+                Claims.Get("https://www.test.com", () => CreateMockedJsonHttpClient(actual))
                     .AssertJson(new
                     {
                         MyObjects = new[]
@@ -334,7 +334,7 @@ namespace Claim.Tests
                 }
             };
 
-            Claim.Get("https://www.test.com", () => CreateMockedJsonHttpClient(actual))
+            Claims.Get("https://www.test.com", () => CreateMockedJsonHttpClient(actual))
                 .AssertJson(actual)
                 .Execute();
         }
@@ -380,7 +380,7 @@ namespace Claim.Tests
 
             var exception = Assert.Catch<AssertFailedException>(() =>
             {
-                Claim.Get("https://www.test.com", () => CreateMockedJsonHttpClient(actual))
+                Claims.Get("https://www.test.com", () => CreateMockedJsonHttpClient(actual))
                     .AssertJson(new
                     {
                         MyObjects = new[]

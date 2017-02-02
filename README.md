@@ -3,14 +3,14 @@ A tiny framework for testing APIs
 
 ### Basic usage
 ```
-  Claim.Get("https://www.claim.com/api/v1/info")
+  Claims.Get("https://www.claim.com/api/v1/info")
     .AssertStatus(HttpStatusCode.OK)
     .AssertContainsHeader("Content-Type", "application/json")
     .AssertJson(new
         {
-            type = Claim.ValueMatchers.String,
+            type = Matchers.String,
             name = "claim",
-            version = Claim.ValueMatchers.Regex("^1")
+            version = Matchers.Regex("^1")
         })
     .Execute();
 ```
@@ -25,7 +25,7 @@ Asserts that the actual status code equals the expected one.
 
 Example:
 ```
-  Claim.Get("https://www.claim.com/api/v1/info")
+  Claims.Get("https://www.claim.com/api/v1/info")
     .AssertStatus(HttpStatusCode.OK)
     .Execute();
 ```
@@ -34,7 +34,7 @@ Asserts that http response contains the specified header and value.
 
 Example:
 ```
-  Claim.Get("https://www.claim.com/api/v1/info")
+  Claims.Get("https://www.claim.com/api/v1/info")
     .AssertContainsHeader("Content-Type", "application/json")
     .Execute();
 ```
@@ -44,15 +44,15 @@ Asserts that http response matches the expected json structure and/or values and
 
 Example:
 ```
-  Claim.Get("https://www.claim.com/api/v1/info")
+  Claims.Get("https://www.claim.com/api/v1/info")
     .AssertJson(new
       {
         // Macthes any string
-        type = Claim.ValueMatchers.String,
+        type = Matchers.String,
         // Matches the exact string "claim"
         name = "claim",
         // Matches anything that starts with "1"
-        version = Claim.ValueMatchers.Regex("^1")
+        version = Matchers.Regex("^1")
       })
     .Execute();
 ```

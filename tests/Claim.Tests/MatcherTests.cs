@@ -10,7 +10,7 @@ namespace Claim.Tests
         [Test]
         public void Type_matchers_matches_the_property_if_match_returns_true()
         {
-            Claim.Get("https://www.test.com", () => CreateMockedJsonHttpClient(new
+            Claims.Get("https://www.test.com", () => CreateMockedJsonHttpClient(new
                 {
                     TestStr = "123",
                     TestInt = 123,
@@ -21,12 +21,12 @@ namespace Claim.Tests
                 }))
                 .AssertJson(new
                     {
-                        TestStr = Claim.ValueMatchers.String,
-                        TestInt = Claim.ValueMatchers.Int,
-                        TestFloat = Claim.ValueMatchers.Float,
-                        TestRegex = Claim.ValueMatchers.Regex("^He"),
-                        TestArray = Claim.ValueMatchers.Array,
-                        TestObject = Claim.ValueMatchers.Object
+                        TestStr = Matchers.String,
+                        TestInt = Matchers.Int,
+                        TestFloat = Matchers.Float,
+                        TestRegex = Matchers.Regex("^He"),
+                        TestArray = Matchers.Array,
+                        TestObject = Matchers.Object
                     })
                 .Execute();
         }
@@ -36,7 +36,7 @@ namespace Claim.Tests
         {
             var exception = Assert.Catch<AssertFailedException>(() =>
             {
-                Claim.Get("https://www.test.com", () => CreateMockedJsonHttpClient(new
+                Claims.Get("https://www.test.com", () => CreateMockedJsonHttpClient(new
                 {
                     TestStr = "123",
                     TestInt = 123,
@@ -47,12 +47,12 @@ namespace Claim.Tests
                 }))
                 .AssertJson(new
                 {
-                    TestStr = Claim.ValueMatchers.Int,
-                    TestInt = Claim.ValueMatchers.String,
-                    TestFloat = Claim.ValueMatchers.Regex("^He"),
-                    TestRegex = Claim.ValueMatchers.Float,
-                    TestArray = Claim.ValueMatchers.Object,
-                    TestObject = Claim.ValueMatchers.Array
+                    TestStr = Matchers.Int,
+                    TestInt = Matchers.String,
+                    TestFloat = Matchers.Regex("^He"),
+                    TestRegex = Matchers.Float,
+                    TestArray = Matchers.Object,
+                    TestObject = Matchers.Array
                 })
                 .Execute();
             });
@@ -68,7 +68,7 @@ namespace Claim.Tests
         [Test]
         public void Configurable_array_matcher_handles_variable_length_arrays_correctly()
         {
-            Claim.Get("https://www.test.com", () => CreateMockedJsonHttpClient(new
+            Claims.Get("https://www.test.com", () => CreateMockedJsonHttpClient(new
             {
                 IntArray = new[] { 1, 2, 3 },
                 ObjectArray = new[]
@@ -82,12 +82,12 @@ namespace Claim.Tests
             }))
             .AssertJson(new
             {
-                IntArray = Claim.ValueMatchers.ConfigurableJsonArrayMatcher(new []{ 1, 2 }, false),
-                ObjectArray = Claim.ValueMatchers.ConfigurableJsonArrayMatcher(new[]
+                IntArray = Matchers.ConfigurableJsonArrayMatcher(new []{ 1, 2 }, false),
+                ObjectArray = Matchers.ConfigurableJsonArrayMatcher(new[]
                 {
-                    new { StrProperty = Claim.ValueMatchers.String },
-                    new { StrProperty = Claim.ValueMatchers.String },
-                    new { StrProperty = Claim.ValueMatchers.String }
+                    new { StrProperty = Matchers.String },
+                    new { StrProperty = Matchers.String },
+                    new { StrProperty = Matchers.String }
                 }, false)
             })
             .Execute();
@@ -98,7 +98,7 @@ namespace Claim.Tests
         {
             var exception = Assert.Catch<AssertFailedException>(() =>
             {
-                Claim.Get("https://www.test.com", () => CreateMockedJsonHttpClient(new
+                Claims.Get("https://www.test.com", () => CreateMockedJsonHttpClient(new
                     {
                         IntArray = new[] {1, 2, 3},
                         ObjectArray = new[]
@@ -112,12 +112,12 @@ namespace Claim.Tests
                     }))
                     .AssertJson(new
                     {
-                        IntArray = Claim.ValueMatchers.ConfigurableJsonArrayMatcher(new[] {1, 2}, true),
-                        ObjectArray = Claim.ValueMatchers.ConfigurableJsonArrayMatcher(new[]
+                        IntArray = Matchers.ConfigurableJsonArrayMatcher(new[] {1, 2}, true),
+                        ObjectArray = Matchers.ConfigurableJsonArrayMatcher(new[]
                         {
-                            new {StrProperty = Claim.ValueMatchers.Int},
-                            new {StrProperty = Claim.ValueMatchers.Int},
-                            new {StrProperty = Claim.ValueMatchers.Int}
+                            new {StrProperty = Matchers.Int},
+                            new {StrProperty = Matchers.Int},
+                            new {StrProperty = Matchers.Int}
                         }, false)
                     })
                     .Execute();
