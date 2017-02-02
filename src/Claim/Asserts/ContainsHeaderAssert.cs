@@ -22,7 +22,11 @@ namespace Claim.Asserts
         public Result Assert(Response response)
         {
             IEnumerable<string> actualValues;
-            if (response.ResponseMessage.Headers.TryGetValues(_name, out actualValues))
+            var success = response.ResponseMessage.Headers.TryGetValues(_name, out actualValues);
+            if (!success)
+                success = response.ResponseMessage?.Content?.Headers?.TryGetValues(_name, out actualValues) ?? false;
+
+            if (success)
             {
                 var failed = Result.Failed<ContainsHeaderAssert>($"The actual header values does not match the expected header values. Expected: '{_values.ToCommaSeparatedList()}'. Actual: '{actualValues.ToCommaSeparatedList()}'.");
 
