@@ -1,0 +1,27 @@
+﻿{
+    "version": "1.0.0-beta",
+    "name": "claim",
+    "title": "claim",
+    "authors": [ "Joakim Thun" ],
+    "description": "A tiny library for testing APIs",
+
+    "packOptions": {
+        "owners": [ "Joakim Thun" ],
+        "projectUrl": "https://github.com/joakimthun/claim",
+        "licenseUrl": "https://github.com/joakimthun/claim/blob/master/licence",
+        "requireLicenseAcceptance": false,
+        "tags": [ "test", "testing", "assert", "api-testing" ]
+    },
+
+    "dependencies": {
+        "NETStandard.Library": "1.6.1",
+        "Newtonsoft.Json": "9.0.1",
+        "System.Reflection.TypeExtensions": "4.3.0"
+    },
+
+    "frameworks": {
+        "netstandard1.2": {
+            "imports": "dnxcore50"
+        }
+    }
+}
