@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using Newtonsoft.Json;
 
 namespace Claim
@@ -34,8 +35,8 @@ namespace Claim
 
         protected override void BeforeSend(HttpRequestMessage httpRequest)
         {
-            httpRequest.Headers.TryAddWithoutValidation("Content-Type", _contentType);
             httpRequest.Content = _content;
+            httpRequest.Content.Headers.ContentType = new MediaTypeHeaderValue(_contentType);
         }
     }
 }
