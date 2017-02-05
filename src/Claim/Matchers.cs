@@ -12,8 +12,11 @@ namespace Claim
         public static FloatTypeMatcher Float => new FloatTypeMatcher();
         public static BoolTypeMatcher Boolean => new BoolTypeMatcher();
         public static NullTypeMatcher Null => new NullTypeMatcher();
+
         public static DateTypeMatcher Date => new DateTypeMatcher();
-        public static DateStringMatcher DateString(string expected) => new DateStringMatcher(expected);
+        public static DateMatcher MacthDate(string expected) => new DateMatcher(expected);
+        public static DateMatcher MatchDate(DateTime expected) => new DateMatcher(expected);
+
         public static UriTypeMatcher Uri => new UriTypeMatcher();
         public static TimeSpanTypeMatcher TimeSpan => new TimeSpanTypeMatcher();
 

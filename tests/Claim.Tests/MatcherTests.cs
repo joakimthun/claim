@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NUnit.Framework;
 using Claim.Exceptions;
 
@@ -127,6 +128,20 @@ namespace Claim.Tests
             Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The property 'ObjectArray' did not match the specified matcher. Message: The property 'ObjectArray[0].StrProperty' did not match the specified matcher. Message: Type mismatch. Expected: 'Integer', Actual: 'String'."));
             Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The property 'ObjectArray' did not match the specified matcher. Message: The property 'ObjectArray[1].StrProperty' did not match the specified matcher. Message: Type mismatch. Expected: 'Integer', Actual: 'String'."));
             Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The property 'ObjectArray' did not match the specified matcher. Message: The property 'ObjectArray[2].StrProperty' did not match the specified matcher. Message: Type mismatch. Expected: 'Integer', Actual: 'String'."));
+        }
+
+        [Test]
+        public void Date_matcher_matches_dates_correctly()
+        {
+            Claims.Get("https://www.test.com", () => CreateMockedJsonHttpClient(new
+            {
+                MyDate = DateTime.Parse("2015-07-25T12:30Z")
+            }))
+            .AssertJson(new
+            {
+                MyDate = Matchers.MacthDate("2015-07-25T12:30Z")
+            })
+            .Execute();
         }
     }
 }

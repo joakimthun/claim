@@ -1,13 +1,19 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using Newtonsoft.Json.Linq;
 
 namespace Claim.ValueMatchers
 {
-    public class DateStringMatcher : IPropertyValueMatcher
+    public class DateMatcher : IPropertyValueMatcher
     {
-        private readonly string _expected;
+        private readonly DateTime _expected;
 
-        public DateStringMatcher(string expected)
+        public DateMatcher(string expected)
+        {
+            _expected = DateTime.Parse(expected);
+        }
+
+        public DateMatcher(DateTime expected)
         {
             _expected = expected;
         }
@@ -20,8 +26,7 @@ namespace Claim.ValueMatchers
             {
                 try
                 {
-                    var actualValueStr = (string)actualValue;
-                    success = _expected == actualValueStr;
+                    success = (DateTime)actualValue == _expected;
                 }
                 catch
                 {
@@ -31,7 +36,7 @@ namespace Claim.ValueMatchers
             return new MatchingResult
             {
                 Success = success,
-                Message = success ? string.Empty : $"The DateStringMatcher did not match the actual value: '{actualValue}'."
+                Message = success ? string.Empty : $"The DateMatcher did not match. Actual value: '{actualValue}', Actual type: '{actualValue.Type}'"
             };
         }
     }
