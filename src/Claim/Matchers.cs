@@ -14,7 +14,7 @@ namespace Claim
         public static NullTypeMatcher Null => new NullTypeMatcher();
 
         public static DateTypeMatcher Date => new DateTypeMatcher();
-        public static DateMatcher MacthDate(string expected) => new DateMatcher(expected);
+        public static DateMatcher MatchDate(string expected) => new DateMatcher(expected);
         public static DateMatcher MatchDate(DateTime expected) => new DateMatcher(expected);
 
         public static UriTypeMatcher Uri => new UriTypeMatcher();

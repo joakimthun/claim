@@ -139,7 +139,7 @@ namespace Claim.Tests
             }))
             .AssertJson(new
             {
-                MyDate = Matchers.MacthDate("2015-07-25T12:30Z")
+                MyDate = Matchers.MatchDate("2015-07-25T12:30Z")
             })
             .Execute();
         }
