@@ -85,7 +85,7 @@ Claim also supports matching properties on just the property type or by using a 
         myBooleanProperty = Matchers.Boolean,
         myNullProperty = Matchers.Null,
         myDate1 = Matchers.Date,
-        myDate2 = Matchers.MatchDate("2017-01-25T14:30Z")
+        myDate2 = Matchers.MatchDate("2017-01-25T14:30Z", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind)
       })
     .Execute();
 ```
