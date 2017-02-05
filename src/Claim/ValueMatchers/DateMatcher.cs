@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Reflection;
 using Newtonsoft.Json.Linq;
 
@@ -8,9 +9,9 @@ namespace Claim.ValueMatchers
     {
         private readonly DateTime _expected;
 
-        public DateMatcher(string expected)
+        public DateMatcher(string expected, IFormatProvider provider, DateTimeStyles style)
         {
-            _expected = DateTime.Parse(expected);
+            _expected = DateTime.Parse(expected, provider, style);
         }
 
         public DateMatcher(DateTime expected)

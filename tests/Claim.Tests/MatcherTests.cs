@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using NUnit.Framework;
 using Claim.Exceptions;
@@ -135,11 +136,11 @@ namespace Claim.Tests
         {
             Claims.Get("https://www.test.com", () => CreateMockedJsonHttpClient(new
             {
-                MyDate = DateTime.Parse("2015-07-25T12:30Z")
+                MyDate = DateTime.Parse("2015-07-25T12:30Z", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind)
             }))
             .AssertJson(new
             {
-                MyDate = Matchers.MatchDate("2015-07-25T12:30Z")
+                MyDate = Matchers.MatchDate("2015-07-25T12:30Z", CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind)
             })
             .Execute();
         }

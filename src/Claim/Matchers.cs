@@ -1,5 +1,6 @@
 ﻿using Claim.ValueMatchers;
 using System;
+using System.Globalization;
 
 namespace Claim
 {
@@ -14,7 +15,7 @@ namespace Claim
         public static NullTypeMatcher Null => new NullTypeMatcher();
 
         public static DateTypeMatcher Date => new DateTypeMatcher();
-        public static DateMatcher MatchDate(string expected) => new DateMatcher(expected);
+        public static DateMatcher MatchDate(string expected, IFormatProvider provider, DateTimeStyles style) => new DateMatcher(expected, provider, style);
         public static DateMatcher MatchDate(DateTime expected) => new DateMatcher(expected);
 
         public static UriTypeMatcher Uri => new UriTypeMatcher();
