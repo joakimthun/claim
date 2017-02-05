@@ -47,6 +47,9 @@ namespace Claim.Asserts
 
         public Result Assert(Response response)
         {
+            if(response.ResponseContent == null || response.ResponseContent.Length == 0)
+                return Result.Failed<JsonAssert>("JsonAssert: Empty response body.");
+
             Verify(_expectedResponseStructure, JObject.Parse(Encoding.UTF8.GetString(response.ResponseContent, 0, response.ResponseContent.Length)));
 
             if (_errors.Any())

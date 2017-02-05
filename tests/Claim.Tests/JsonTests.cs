@@ -434,5 +434,18 @@ namespace Claim.Tests
             Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyObjects[0].MyNestedObjects[2].MySecondLevelNestedObjects[0]' is not of the same type as the property in the response. Expected type: 'Int32'. Actual type: 'String'"));
             Assert.IsTrue(exception.FailedResults.Single().Message.Contains("The expected property 'MyObjects[0].MyNestedObjects[2].MyWrongValueProperty' does not have the same value as the property in the response. Expected value: '13'. Actual value: '12'"));
         }
+
+        [Test]
+        public void Assert_json_correctly_handles_empty_response_bodies()
+        {
+            var exception = Assert.Catch<AssertFailedException>(() =>
+            {
+              Claims.Get("https://www.test.com", () => CreateMockedJsonHttpClient(""))
+                  .AssertJson(new {})
+                  .Execute();
+            });
+
+            Assert.IsTrue(exception.FailedResults.Single().Message.Contains("JsonAssert: Empty response body."));
+        }
     }
 }
