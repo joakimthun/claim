@@ -6,16 +6,16 @@ A tiny framework for testing APIs
   [Test]
   public void MyTest()
   {
-    Claims.Get("https://www.claim.com/api/v1/test")
-      .AssertStatus(HttpStatusCode.OK)
-      .AssertContainsHeader("Content-Type", "application/json")
-      .AssertJson(new
-      {
-        type = Matchers.String,
-        name = "claim",
-        version = Matchers.Regex("^1")
-      })
-      .Execute();
+     Claims.Get("https://www.claim.com/api/v1/test")
+       .AssertStatus(HttpStatusCode.OK)
+       .AssertContainsHeader("Content-Type", "application/json")
+       .AssertJson(new
+       {
+         type = Matchers.String,
+         name = "claim",
+         version = Matchers.Regex("^1")
+       })
+       .Execute();
   }
 ```
 
