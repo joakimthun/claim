@@ -50,7 +50,15 @@ namespace Claim.Asserts
             if(response.ResponseContent == null || response.ResponseContent.Length == 0)
                 return Result.Failed<JsonAssert>("JsonAssert: Empty response body.");
 
-            Verify(_expectedResponseStructure, JObject.Parse(Encoding.UTF8.GetString(response.ResponseContent, 0, response.ResponseContent.Length)));
+            try
+            {
+                Verify(_expectedResponseStructure, JObject.Parse(Encoding.UTF8.GetString(response.ResponseContent, 0, response.ResponseContent.Length)));
+            }
+            catch (JsonReaderException)
+            {
+                var actualContentType = response.ResponseMessage?.Content?.Headers?.ContentType?.ToString() ?? "Unknown";
+                return Result.Failed<JsonAssert>($"JsonAssert: Not a valid json response. Actual content type: '{actualContentType}'");
+            }
 
             if (_errors.Any())
                 return Result.Failed<JsonAssert>(_errors.ToNewLineSeparatedList());
